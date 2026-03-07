@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_3VrnnglmF5fSBKk6yMaIHQt9wh1d",
+  "orgId": "team_9pMwV2NSnS3RTNTOxo4gySNx",
+  "projectName": "one-to-one-publico",
+  "settings": {
+    "createdAt": 1772463002633,
+    "framework": "vite",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
