@@ -1,5 +1,5 @@
 import React from 'react';
-import CodigoQr from './CodigoQr'; 
+import CodigoQR from './CodigoQR'; 
 
 export default function TicketConfirmacion({ 
   pedido = [], 
