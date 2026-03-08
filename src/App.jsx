@@ -56,13 +56,17 @@ function AppContent() {
       
       {/* WRAPPER RESPONSIVE: Aquí ocurre la magia tipo App móvil */}
       <div style={{
-        width: '100%',
-        maxWidth: '500px', // Ancho máximo tipo teléfono profesional
-        minHeight: '100vh',
-        background: '#1a0a0a', // El color de tu app
-        position: 'relative',
-        overflowX: 'hidden'
-      }}>
+  width: '100%',
+  maxWidth: '430px',      // Ancho exacto de un iPhone 16 Pro Max para que sea real
+  height: '100vh',        // Altura fija para evitar scroll infinito
+  background: '#1a0a0a', 
+  position: 'relative',
+  overflow: 'hidden',     // Bloquea el scroll exterior
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '20px',        // Esto "encoge" el contenido hacia adentro y deja ver el tapiz
+  boxSizing: 'border-box' // Para que el padding no sume tamaño extra
+}}>
 
         {pantalla === 'welcome' && (
           <WelcomeInicio usuario={usuario} onSelectCategory={irACategoria} />
