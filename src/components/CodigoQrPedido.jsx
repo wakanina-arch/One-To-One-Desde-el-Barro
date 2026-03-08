@@ -1,5 +1,5 @@
 import React from 'react';
-import CodigoQr from './CodigoQr';
+import CodigoQr from './CodigoQR';
 
 export default function CodigoQrPedido({ ordenId, tamaño = 100 }) {
   const rutaPedido = `order/${ordenId}`;
