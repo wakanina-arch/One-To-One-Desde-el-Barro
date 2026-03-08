@@ -1,0 +1,22 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  /* Altura especial para móviles */
+  background-color: #000000;
+  /* El tapiz exterior */
+  overflow: hidden;
+  /* Bloquea el scroll rebelde */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Evita que el iPhone haga zoom automático al tocar inputs */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
