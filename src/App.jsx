@@ -6,22 +6,65 @@ import ResumenPedido from "./ResumenPedido";
 import SeccionPago from "./components/SeccionPago";
 import TicketConfirmacion from "./components/TicketConfirmacion"; 
 
+// 1. BASE DE DATOS RESTAURADA (Con rutas seguras para iPhone)
 const database = {
-  primero: { titulo: 'COMPLEMENTOS', icono: '🍟', platos: [] },
-  segundo: { titulo: 'ENSALADAS', icono: '🥗', platos: [] },
-  postres: { titulo: 'BEBIDAS', icono: '🥤', platos: [] },
-  otras: { titulo: 'PIZZAS AL HORNO', icono: '🍕', platos: [] }
+  primero: { 
+    titulo: 'COMPLEMENTOS', icono: '🍟',
+    platos: [
+      { id: 101, nombre: 'Alitas BBQ 1', precio: 8.50, imagen: '/img/primero/Alitas1.png', kcal: 450, prot: 25, carb: 5 },
+      { id: 102, nombre: 'Alitas BBQ 2', precio: 9.00, imagen: '/img/primero/Alitas2.png', kcal: 480, prot: 27, carb: 5 },
+      { id: 103, nombre: 'Bistec Combinado', precio: 12.50, imagen: '/img/primero/Bistec convinado.png', kcal: 650, prot: 40, carb: 10 },
+      { id: 104, nombre: 'Bowl Patatas Fritas', precio: 5.50, imagen: '/img/primero/Bowl Patatas fritas.png', kcal: 400, prot: 4, carb: 55 },
+      { id: 105, nombre: 'Combos Especiales', precio: 15.00, imagen: '/img/primero/Combos.png', kcal: 800, prot: 35, carb: 60 },
+      { id: 106, nombre: 'Nachos con Queso', precio: 7.50, imagen: '/img/primero/Nachos con queso.png', kcal: 500, prot: 10, carb: 45 },
+      { id: 107, nombre: 'Palomitas de Maíz', precio: 3.50, imagen: '/img/primero/Palomitas de maíz.png', kcal: 250, prot: 3, carb: 30 },
+      { id: 108, nombre: 'Pincho de Verduras', precio: 6.50, imagen: '/img/primero/Pincho de verduras.png', kcal: 180, prot: 5, carb: 12 },
+      { id: 109, nombre: 'Pinchos Morunos', precio: 9.50, imagen: '/img/primero/Pinchos morunos.png', kcal: 420, prot: 35, carb: 2 },
+      { id: 110, nombre: 'Pollo Broster', precio: 11.00, imagen: '/img/primero/Pollo broster.png', kcal: 600, prot: 30, carb: 20 },
+      { id: 111, nombre: 'Tabla Flamenca', precio: 18.00, imagen: '/img/primero/Tabla flamenca.png', kcal: 750, prot: 45, carb: 10 }
+    ]
+  },
+  segundo: { 
+    titulo: 'ENSALADAS', icono: '🥗',
+    platos: [
+      { id: 201, nombre: 'Ensalada Alemana', precio: 9.50, imagen: '/img/segundo/Ensalada Alemana de Patata.jpg', kcal: 350, prot: 6, carb: 40 },
+      { id: 202, nombre: 'Ensalada Caprese', precio: 10.00, imagen: '/img/segundo/Ensalada Caprese.jpg', kcal: 280, prot: 12, carb: 5 },
+      { id: 203, nombre: 'Ensalada César', precio: 11.50, imagen: '/img/segundo/Ensalada César.jpg', kcal: 520, prot: 25, carb: 15 },
+      { id: 204, nombre: 'Ensalada Coleslaw', precio: 8.00, imagen: '/img/segundo/Ensalada Coleslaw.jpg', kcal: 220, prot: 2, carb: 18 },
+      { id: 205, nombre: 'Ensalada Griega', precio: 10.50, imagen: '/img/segundo/Ensalada Griega.jpg', kcal: 310, prot: 8, carb: 10 },
+      { id: 206, nombre: 'Ensalada Mimosa', precio: 9.00, imagen: '/img/segundo/Ensalada Mimosa.jpg', kcal: 340, prot: 15, carb: 8 },
+      { id: 207, nombre: 'Ensalada Nizarda', precio: 11.00, imagen: '/img/segundo/Ensalada Nizarda.jpg', kcal: 400, prot: 20, carb: 12 },
+      { id: 208, nombre: 'Ensalada Tabulé', precio: 8.50, imagen: '/img/segundo/Ensalada Tabulé.jpg', kcal: 260, prot: 6, carb: 35 },
+      { id: 209, nombre: 'Ensalada Waldorf', precio: 10.50, imagen: '/img/segundo/Ensalada Waldorf.jpg', kcal: 380, prot: 5, carb: 25 },
+      { id: 210, nombre: 'Ensaladilla Rusa', precio: 9.00, imagen: '/img/segundo/Ensaladilla Rusa.jpg', kcal: 450, prot: 8, carb: 30 }
+    ]
+  },
+  postres: { 
+    titulo: 'BEBIDAS', icono: '🥤',
+    platos: [
+      { id: 301, nombre: 'Agua Mineral', precio: 1.50, imagen: '/img/postres/AguaMineral.jpg', kcal: 0, prot: 0, carb: 0 },
+      { id: 302, nombre: 'Cerveza Club', precio: 3.50, imagen: '/img/postres/CervezaClub.jpg', kcal: 150, prot: 1, carb: 12 },
+      { id: 305, nombre: 'Coca Cola', precio: 2.50, imagen: '/img/postres/CocaCola.jpg', kcal: 140, prot: 0, carb: 35 },
+      { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 }
+    ]
+  },
+  otras: { 
+    titulo: 'PIZZAS AL HORNO', icono: '🍕',
+    platos: [
+      { id: 401, nombre: 'Pizza Carbonara', precio: 13.50, imagen: '/img/otras/Carbonara.jpg', kcal: 900, prot: 35, carb: 80 },
+      { id: 405, nombre: 'Pizza Margherita', precio: 11.00, imagen: '/img/otras/Margherita.jpg', kcal: 700, prot: 22, carb: 80 },
+      { id: 408, nombre: 'Pizza Pepperoni', precio: 13.50, imagen: '/img/otras/Pepperoni.jpg', kcal: 950, prot: 32, carb: 85 }
+    ] 
+  }
 };
 
 function AppContent() {
-  const { clearCart, calculateTotal } = useCart();
-  
+  const { cartItems, clearCart, calculateTotal } = useCart();
   const [pantalla, setPantalla] = useState('welcome');
   const [categoriaActual, setCategoriaActual] = useState(null);
   const [fraseOraculo, setFraseOraculo] = useState(""); 
   const [datosFinales, setDatosFinales] = useState({ total: 0, metodo: '', ordenId: '' });
 
-  // 1. CARGA INICIAL DEL USUARIO (Solución al error de ESLint y el bug de sintaxis)
   const [usuario] = useState(() => {
     const savedUser = localStorage.getItem('oneToOneUser');
     return savedUser ? JSON.parse(savedUser) : null;
@@ -43,29 +86,13 @@ function AppContent() {
 
   return (
     <div className="App" style={{ 
-      width: '100vw', 
-      height: '100dvh', 
-      background: '#000000', 
-      margin: 0, 
-      padding: 0,
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden' 
+      width: '100vw', height: '100dvh', background: '#000', 
+      display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' 
     }}>
-      
       <div style={{
-        width: '88%', // Reducimos ancho para ver el tapiz lateral
-        maxWidth: '430px', 
-        height: '88vh', // Reducimos alto para ver el tapiz superior/inferior
-        background: '#1a0a0a', 
-        position: 'relative',
-        overflow: 'hidden', 
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: '35px', 
-        border: '1px solid rgba(255,215,0,0.15)',
-        boxShadow: '0 0 40px rgba(0,0,0,0.9)'
+        width: '88%', maxWidth: '430px', height: '90vh', background: '#1a0a0a', 
+        position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        borderRadius: '35px', border: '1px solid rgba(255,215,0,0.15)', boxShadow: '0 0 40px rgba(0,0,0,0.9)'
       }}>
 
         {pantalla === 'welcome' && (
@@ -100,10 +127,8 @@ function AppContent() {
         {pantalla === 'ticket' && (
           <TicketConfirmacion 
             datos={datosFinales}
-            onCerrar={() => {
-              clearCart();
-              setPantalla('welcome');
-            }}
+            pedido={cartItems}
+            onCerrar={() => { clearCart(); setPantalla('welcome'); }}
           />
         )}
       </div>
