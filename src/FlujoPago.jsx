@@ -69,7 +69,7 @@ export default function FlujoPago({ onVolverAlMenu, usuario }) {
         <>
           {paso === 'resumen' && (
             <ResumenPedido 
-              alConfirmar={(datos) => setPaso('pago')}
+              alConfirmar={() => setPaso('pago')}
               alVolver={onVolverAlMenu}
             />
           )}
