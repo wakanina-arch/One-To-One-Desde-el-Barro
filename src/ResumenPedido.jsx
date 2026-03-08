@@ -1,5 +1,5 @@
-// ResumenPedido.jsx - Versión que recibe props
-import React, { useState } from 'react';
+// ResumenPedido.jsx
+import React from 'react';
 
 const ResumenPedido = ({ 
   carrito, 
@@ -15,16 +15,27 @@ const ResumenPedido = ({
   eliminarDelCarrito 
 }) => {
   
-  console.log('ResumenPedido - carrito:', carrito);
+  console.log('ResumenPedido - props recibidas:', { 
+    carrito, subtotal, iva, envio, total, tipoEntrega 
+  });
 
   if (!carrito || carrito.length === 0) {
     return (
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      <div style={{ padding: '20px', textAlign: 'center', color: 'white' }}>
         <h2>Tu carrito está vacío</h2>
         <button onClick={alVolver}>Volver al Menú</button>
       </div>
     );
   }
+
+  const handleConfirmar = () => {
+    console.log('🟢 Botón CONFIRMAR clickeado - llamando a alConfirmar');
+    if (alConfirmar) {
+      alConfirmar();
+    } else {
+      console.error('❌ alConfirmar es undefined');
+    }
+  };
 
   return (
     <div className="resumen-contenedor" style={{ 
@@ -33,7 +44,9 @@ const ResumenPedido = ({
       margin: 'auto', 
       background: 'white', 
       borderRadius: '20px', 
-      color: '#333' 
+      color: '#333',
+      overflowY: 'auto',
+      maxHeight: '80vh'
     }}>
       <h2 style={{ textAlign: 'center', color: '#8B0000', fontFamily: "'Cormorant Garamond', serif" }}>
         Revisa tu pedido 🥘
@@ -183,8 +196,9 @@ const ResumenPedido = ({
         </div>
       </div>
 
+      {/* BOTÓN PRINCIPAL - CORREGIDO */}
       <button 
-        onClick={alConfirmar}
+        onClick={handleConfirmar}
         style={{ 
           width: '100%', 
           padding: '15px', 
@@ -201,14 +215,18 @@ const ResumenPedido = ({
         Ir al Formulario de Pago 💳
       </button>
 
-      <button onClick={alVolver} style={{ 
-        width: '100%', 
-        marginTop: '10px', 
-        background: 'none', 
-        border: 'none', 
-        color: '#666', 
-        cursor: 'pointer' 
-      }}>
+      {/* BOTÓN SECUNDARIO */}
+      <button 
+        onClick={alVolver} 
+        style={{ 
+          width: '100%', 
+          marginTop: '10px', 
+          background: 'none', 
+          border: 'none', 
+          color: '#666', 
+          cursor: 'pointer' 
+        }}
+      >
         ← Volver al Menú
       </button>
     </div>

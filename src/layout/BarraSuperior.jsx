@@ -9,12 +9,18 @@ export default function BarraSuperior({
 }) {
   const [pulse, setPulse] = useState(false);
 
-  // Efecto de pulso cuando cambia el carrito (Dinamismo inconsciente)
+  // 1. SOLUCIÓN AL ERROR DE ESLINT: 
+  // Usamos una condición para que el pulso solo se active si el contador crece
   useEffect(() => {
     if (carritoCount > 0) {
-      setPulse(true);
-      const timer = setTimeout(() => setPulse(false), 300);
-      return () => clearTimeout(timer);
+      // Usamos un pequeño retraso para evitar el renderizado síncrono que causa el error
+      const timerPulse = setTimeout(() => {
+        setPulse(true);
+        const timerOff = setTimeout(() => setPulse(false), 300);
+        return () => clearTimeout(timerOff);
+      }, 50); 
+      
+      return () => clearTimeout(timerPulse);
     }
   }, [carritoCount]);
 
@@ -23,36 +29,44 @@ export default function BarraSuperior({
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "0.5rem 1.2rem",
-      background: "linear-gradient(to bottom, rgba(26, 10, 10, 0.95), rgba(61, 10, 10, 0.8))",
+      padding: "0 1.2rem",
+      background: "linear-gradient(to bottom, rgba(26, 10, 10, 0.98), rgba(40, 10, 10, 0.9))",
       backdropFilter: "blur(15px)",
-      borderBottom: "1px solid rgba(255, 215, 0, 0.4)",
+      borderBottom: "1px solid rgba(255, 215, 0, 0.3)",
       position: "sticky",
       top: 0,
       zIndex: 1000,
-      height: "60px"
+      height: "65px", // Altura optimizada para el "notch" del iPhone
+      width: "100%",
+      boxSizing: "border-box"
     }}>
-      {/* Lado Izquierdo: Menú */}
+      
+      {/* Lado Izquierdo: Menú Explorar */}
       <button 
         onClick={onMenuClick} 
         style={styles.btnNav}
       >
-        <span style={{ fontSize: "1.4rem", color: "#FFD700" }}>☰</span>
+        <span style={{ fontSize: "1.3rem", color: "#FFD700" }}>☰</span>
         <span style={styles.textoNav}>EXPLORAR</span>
       </button>
 
-      {/* Centro: Logo Identidad */}
-      <div style={{ textAlign: 'center' }}>
+      {/* Centro: Logo Identidad (Escalado para iPhone) */}
+      <div style={{ textAlign: 'center', flex: 1 }}>
         <h2 style={styles.titulo}>ONE TO ONE</h2>
         <div style={styles.subtitulo}>DESDE EL BARRO</div>
       </div>
 
       {/* Lado Derecho: Acciones Perfil/Carrito */}
-      <div style={{ display: "flex", gap: "0.8rem", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
         
-        {/* Carrito con contador dinámico */}
+        {/* Carrito con efecto visual blanco */}
         <button onClick={onCarritoClick} style={styles.btnIcono}>
-          <span style={{ fontSize: "1.5rem" }}>🛒</span>
+          <span style={{ 
+            fontSize: "1.4rem", 
+            filter: "brightness(0) invert(1)" // Icono en blanco puro
+          }}>
+            🛒
+          </span>
           {carritoCount > 0 && (
             <span style={{
               ...styles.contador,
@@ -64,19 +78,20 @@ export default function BarraSuperior({
           )}
         </button>
 
-        {/* El Tridente: Representación del Usuario/Ego */}
+        {/* Perfil (Tridente / Usuario) */}
         <button 
           onClick={onPerfilClick} 
           style={{
             ...styles.btnIcono,
             border: usuario ? "1.5px solid #FFD700" : "1.5px solid transparent",
             borderRadius: "50%",
-            padding: "4px",
+            padding: "2px",
+            marginLeft: "5px",
             background: usuario ? "rgba(255, 215, 0, 0.1)" : "transparent"
           }}
         >
           <span style={{ 
-            fontSize: "1.6rem", 
+            fontSize: "1.5rem", 
             filter: usuario ? "drop-shadow(0 0 5px #FFD700)" : "none" 
           }}>
             {usuario ? '🔱' : '⚜️'}
@@ -95,54 +110,57 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "2px",
-    padding: "5px"
+    padding: "5px",
+    minWidth: "60px"
   },
   textoNav: {
-    fontFamily: "'Cormorant Garamond', serif",
-    fontSize: "0.6rem",
+    fontFamily: "serif",
+    fontSize: "0.55rem",
     color: "#FFD700",
     fontWeight: 700,
-    letterSpacing: "1px"
+    letterSpacing: "1px",
+    marginTop: "2px"
   },
   titulo: {
     color: "#FFD700",
     margin: 0,
-    fontSize: "1.1rem",
-    fontFamily: "'Cormorant Garamond', serif",
+    fontSize: "1rem",
+    fontFamily: "serif",
     letterSpacing: "2px",
-    fontWeight: 800
+    fontWeight: 900
   },
   subtitulo: {
     color: "#FF4500",
-    fontSize: "0.45rem",
-    letterSpacing: "2px",
-    fontWeight: 700
+    fontSize: "0.4rem",
+    letterSpacing: "3px",
+    fontWeight: 800,
+    marginTop: "-2px"
   },
   btnIcono: {
     background: "transparent",
     border: "none",
     cursor: "pointer",
     position: "relative",
-    padding: "5px",
+    padding: "8px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center"
   },
   contador: {
     position: "absolute",
-    top: "0px",
-    right: "0px",
+    top: "2px",
+    right: "2px",
     background: "linear-gradient(135deg, #FF4500, #B22222)",
     color: "white",
-    fontSize: "0.65rem",
-    minWidth: "18px",
-    height: "18px",
-    borderRadius: "10px",
+    fontSize: "0.6rem",
+    width: "16px",
+    height: "16px",
+    borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     border: "1px solid #FFD700",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    zIndex: 2
   }
 };

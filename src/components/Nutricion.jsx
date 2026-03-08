@@ -43,12 +43,10 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#fdfaf6', // Tono hueso/barro claro
-    padding: '6px 1px',
-    borderRadius: '20px',
-    border: '1px solid rgba(178, 34, 34, 0.2)', // Rojo brasa suave
-    margin: '15px 0',
-    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)',
+    // ELIMINADO: backgroundColor, border, margin y boxShadow para limpiar el visor
+    width: '100%',
+    padding: '0', 
+    background: 'transparent', 
     fontFamily: "'Cormorant Garamond', serif"
   },
   item: {
@@ -60,7 +58,7 @@ const styles = {
     gap: '2px'
   },
   icono: {
-    fontSize: '1.1rem',
+    fontSize: '1rem',
     filter: 'grayscale(0.2)'
   },
   datos: {
@@ -69,19 +67,19 @@ const styles = {
   },
   valor: {
     fontWeight: '800',
-    color: '#01400e', // Verde esmeralda (Conciencia/Salud)
-    fontSize: '1rem',
+    color: '#01400e', 
+    fontSize: '0.9rem',
     lineHeight: '1'
   },
   unidad: {
-    color: '#8B0000', // Rojo brasa (Identidad)
-    fontSize: '0.6rem',
+    color: '#8B0000', 
+    fontSize: '0.55rem',
     fontWeight: '700',
     letterSpacing: '1px'
   },
   separador: {
     width: '1px',
-    height: '30px',
-    backgroundColor: 'rgba(0,0,0,0.1)'
+    height: '25px',
+    backgroundColor: 'rgba(255,255,255,0.1)' // Cambiado a blanco tenue para fondo oscuro
   }
 };

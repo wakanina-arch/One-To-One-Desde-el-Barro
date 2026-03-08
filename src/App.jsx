@@ -6,7 +6,7 @@ import ResumenPedido from "./ResumenPedido";
 import SeccionPago from "./components/SeccionPago";
 import TicketConfirmacion from "./components/TicketConfirmacion"; 
 
-// 1. BASE DE DATOS RESTAURADA (Con rutas seguras para iPhone)
+// 1. BASE DE DATOS COMPLETA (Rutas corregidas para iPhone /img/...)
 const database = {
   primero: { 
     titulo: 'COMPLEMENTOS', icono: '🍟',
@@ -59,11 +59,17 @@ const database = {
 };
 
 function AppContent() {
-  const { cartItems, clearCart, calculateTotal } = useCart();
+  // Extraemos TODAS las funciones del carrito
+  const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart, calculateTotal } = useCart();
+  
+  console.log('🏠 AppContent - cartItems:', cartItems); // LOG
+  console.log('🏠 AppContent - total:', calculateTotal()); // LOG
+  
   const [pantalla, setPantalla] = useState('welcome');
   const [categoriaActual, setCategoriaActual] = useState(null);
   const [fraseOraculo, setFraseOraculo] = useState(""); 
   const [datosFinales, setDatosFinales] = useState({ total: 0, metodo: '', ordenId: '' });
+  const [tipoEntrega, setTipoEntrega] = useState('local');
 
   const [usuario] = useState(() => {
     const savedUser = localStorage.getItem('oneToOneUser');
@@ -73,12 +79,14 @@ function AppContent() {
   const totalNeto = calculateTotal();
 
   const irACategoria = (id, fraseRecibida) => {
+    console.log('➡️ irACategoria:', id); // LOG
     if (fraseRecibida) setFraseOraculo(fraseRecibida); 
     setCategoriaActual(id); 
     setPantalla('categoria');
   };
 
   const finalizarCompra = (metodoElegido) => {
+    console.log('💳 finalizarCompra:', metodoElegido); // LOG
     const idGenerado = `QR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
     setDatosFinales({ total: totalNeto, metodo: metodoElegido, ordenId: idGenerado });
     setPantalla('ticket');
@@ -90,7 +98,7 @@ function AppContent() {
       display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' 
     }}>
       <div style={{
-        width: '88%', maxWidth: '430px', height: '90vh', background: '#1a0a0a', 
+        width: '88%', maxWidth: '430px', height: '88vh', background: '#1a0a0a', 
         position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
         borderRadius: '35px', border: '1px solid rgba(255,215,0,0.15)', boxShadow: '0 0 40px rgba(0,0,0,0.9)'
       }}>
@@ -103,24 +111,63 @@ function AppContent() {
           <CategoriaScreen2
             usuario={usuario}
             categoria={database[categoriaActual]}
-            onBack={() => setPantalla('welcome')}
-            onVerCarrito={() => setPantalla('resumen')}
+            onBack={() => {
+              console.log('⬅️ onBack'); // LOG
+              setPantalla('welcome');
+            }}
+            onVerCarrito={() => {
+              console.log('🛒 onVerCarrito - items:', cartItems.length); // LOG
+              setPantalla('resumen');
+            }}
+            onAddToCart={(item) => {
+              console.log('➕ onAddToCart desde CategoriaScreen2:', item); // LOG
+              addToCart(item);
+            }}
+            carritoCount={cartItems.length}
             frase={fraseOraculo}
           />
         )}
 
         {pantalla === 'resumen' && (
           <ResumenPedido 
-            onBack={() => setPantalla('categoria')}
-            onContinuar={() => setPantalla('pago')}
+            carrito={cartItems}
+            subtotal={calculateTotal().toFixed(2)}
+            iva={(calculateTotal() * 0.15).toFixed(2)}
+            envio={tipoEntrega === 'domicilio' ? '2.00' : '0.00'}
+            total={(calculateTotal() * 1.15 + (tipoEntrega === 'domicilio' ? 2 : 0)).toFixed(2)}
+            tipoEntrega={tipoEntrega}
+            setTipoEntrega={setTipoEntrega}
+            alConfirmar={() => {
+              console.log('✅ alConfirmar desde Resumen - yendo a pago'); // LOG
+              setPantalla('pago');
+            }}
+            alVolver={() => {
+              console.log('⬅️ alVolver desde Resumen'); // LOG
+              setPantalla('categoria');
+            }}
+            modificarCantidad={(id, delta) => {
+              console.log('🔄 modificarCantidad:', id, delta); // LOG
+              updateQuantity(id, delta);
+            }}
+            eliminarDelCarrito={(id) => {
+              console.log('🗑️ eliminarDelCarrito:', id); // LOG
+              removeFromCart(id);
+            }}
           />
         )}
 
         {pantalla === 'pago' && (
-          <SeccionPago 
+          <SeccionPago
             total={totalNeto}
-            onBack={() => setPantalla('resumen')}
-            onFinalizar={finalizarCompra}
+            carrito={cartItems}
+            alVolver={() => {
+              console.log('⬅️ alVolver desde Pago'); // LOG
+              setPantalla('resumen');
+            }}
+            alConfirmar={(metodo) => {
+              console.log('💳 alConfirmar desde Pago:', metodo); // LOG
+              finalizarCompra(metodo);
+            }}
           />
         )}
 
@@ -128,7 +175,11 @@ function AppContent() {
           <TicketConfirmacion 
             datos={datosFinales}
             pedido={cartItems}
-            onCerrar={() => { clearCart(); setPantalla('welcome'); }}
+            onCerrar={() => { 
+              console.log('🏁 onCerrar - limpiando todo'); // LOG
+              clearCart(); 
+              setPantalla('welcome'); 
+            }}
           />
         )}
       </div>
