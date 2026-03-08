@@ -92,42 +92,79 @@ export default function WelcomeInicio({ onSelectCategory, usuario }) {
 
 const styles = {
   container: { 
-    height: "100dvh", 
-    width: "100%",
+    height: "100dvh", // Altura dinámica real de la pantalla del iPhone
+    width: "100vw",
     background: "radial-gradient(circle at center, #3d0a0a 0%, #1a0a0a 100%)", 
     display: "flex", 
     alignItems: "center", 
     justifyContent: "center", 
-    overflow: "hidden",
-    padding: "20px", // Margen de seguridad para ver el "tapiz"
-    boxSizing: "border-box"
+    overflow: "hidden", // Prohíbe el scroll por completo
+    position: "fixed",  // Fija la pantalla para que no se mueva al tocar
+    top: 0,
+    left: 0
   },
   card: { 
-    padding: "1.5rem 1.2rem", 
-    borderRadius: "32px", 
-    maxWidth: "320px", // Más estrecho para iPhone 16
-    width: "100%", 
+    padding: "1.2rem", 
+    borderRadius: "28px", 
+    width: "85%",      // Deja un 15% de espacio para ver el "tapiz" (fondo)
+    maxWidth: "360px", // Ancho máximo tipo iPhone
+    height: "auto",
+    maxHeight: "85vh", // Asegura que la tarjeta nunca sea más alta que la pantalla
     textAlign: "center", 
-    background: "rgba(255,255,255,0.03)", 
-    backdropFilter: "blur(12px)", 
+    background: "rgba(255,255,255,0.04)", 
+    backdropFilter: "blur(15px)", 
     border: "1px solid rgba(255,215,0,0.15)",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.5)"
+    boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between" // Distribuye el contenido internamente
   },
-  titulo: { color: "#fff", fontSize: "1.8rem", margin: "0 0 0.8rem 0", fontFamily: "serif", letterSpacing: '3px' },
-  fraseContenedor: { height: "70px", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1rem" },
-  fraseTexto: { color: "#FFD700", fontSize: "0.95rem", fontStyle: "italic", opacity: 0.8, lineHeight: "1.3" },
-  gridCategorias: { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.8rem" },
+  titulo: { 
+    color: "#fff", 
+    fontSize: "1.6rem", 
+    margin: "0.5rem 0", 
+    fontFamily: "serif", 
+    letterSpacing: '3px',
+    textTransform: "uppercase"
+  },
+  fraseContenedor: { 
+    flex: 1, 
+    display: "flex", 
+    alignItems: "center", 
+    justifyContent: "center", 
+    margin: "0.5rem 0",
+    padding: "0 10px"
+  },
+  fraseTexto: { 
+    color: "#FFD700", 
+    fontSize: "0.85rem", 
+    fontStyle: "italic", 
+    lineHeight: "1.4",
+    margin: 0
+  },
+  gridCategorias: { 
+    display: "grid", 
+    gridTemplateColumns: "repeat(2, 1fr)", 
+    gap: "0.7rem",
+    marginTop: "0.5rem"
+  },
   btnCat: { 
-    padding: "0.8rem 0.4rem", 
-    background: "rgba(0,0,0,0.4)", 
+    padding: "0.7rem 0.2rem", 
+    background: "rgba(0,0,0,0.5)", 
     color: "white", 
-    border: "1px solid rgba(255,215,0,0.3)", 
-    borderRadius: "16px", 
-    cursor: "pointer", 
+    border: "1px solid rgba(255,215,0,0.25)", 
+    borderRadius: "18px", 
     display: "flex", 
     flexDirection: "column", 
     alignItems: "center",
-    transition: "transform 0.2s"
+    gap: "4px"
   },
-  footer: { marginTop: "1.5rem", fontSize: "0.7rem", color: "#FFD700", letterSpacing: "4px", opacity: 0.5 }
+  footer: { 
+    marginTop: "1rem", 
+    fontSize: "0.65rem", 
+    color: "#FFD700", 
+    letterSpacing: "4px", 
+    opacity: 0.4 
+  }
 };
+
