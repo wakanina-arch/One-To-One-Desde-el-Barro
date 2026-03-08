@@ -1,27 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import RegisterModal from './components/RegisterModal';
+
+// 1. Constante fuera del componente para evitar recrearla en cada render y errores de dependencia
+const FRASES_ORACULO = [
+  "El fuego no solo cocina, también transforma el alma.",
+  "Mira el humo ascender y suelta lo que ya no te pertenece.",
+  "La paciencia es el ingrediente que el tiempo no puede comprar.",
+  "Como el barro en el torno, tu destino se moldea con tus manos.",
+  "Busca el silencio en el caos, y el sabor en lo sencillo.",
+  "La energía que das es el banquete que recibirás.",
+  "Eres una chispa divina en un mundo de brasas.",
+  "El hambre del cuerpo se sacia, el hambre del espíritu se cultiva.",
+  "Nada es permanente, excepto el cambio y el aroma del recuerdo.",
+  "Escucha el crujir de la leña; es el universo susurrándote."
+];
 
 export default function WelcomeInicio({ onSelectCategory, usuario }) {
   const [showRegister, setShowRegister] = useState(false);
-  const [fraseDelDia, setFraseDelDia] = useState("");
-
-  const FRASES_ORACULO = [
-    "El fuego no solo cocina, también transforma el alma.",
-    "Mira el humo ascender y suelta lo que ya no te pertenece.",
-    "La paciencia es el ingrediente que el tiempo no puede comprar.",
-    "Como el barro en el torno, tu destino se moldea con tus manos.",
-    "Busca el silencio en el caos, y el sabor en lo sencillo.",
-    "La energía que das es el banquete que recibirás.",
-    "Eres una chispa divina en un mundo de brasas.",
-    "El hambre del cuerpo se sacia, el hambre del espíritu se cultiva.",
-    "Nada es permanente, excepto el cambio y el aroma del recuerdo.",
-    "Escucha el crujir de la leña; es el universo susurrándote."
-  ];
-
-  useEffect(() => {
+  
+  // 2. Estado inicial con función: Se ejecuta UNA SOLA VEZ al montar. 
+  // Esto elimina el error "react-hooks/set-state-in-effect"
+  const [fraseDelDia] = useState(() => {
     const randomIndex = Math.floor(Math.random() * FRASES_ORACULO.length);
-    setFraseDelDia(FRASES_ORACULO[randomIndex]);
-  }, []);
+    return FRASES_ORACULO[randomIndex];
+  });
 
   return (
     <div style={styles.container}>
@@ -32,7 +34,7 @@ export default function WelcomeInicio({ onSelectCategory, usuario }) {
         }
         .moneda-container { 
           width: 70px; height: 70px; cursor: pointer; 
-          perspective: 1000px; margin: 0 auto 1rem;
+          perspective: 1000px; margin: 0 auto 0.5rem;
         }
         .moneda-giratoria { 
           width: 100%; height: 100%; position: relative; 
@@ -45,15 +47,17 @@ export default function WelcomeInicio({ onSelectCategory, usuario }) {
           justify-content: center; backface-visibility: hidden; 
           border: 3px solid #FFD700; 
         }
-        .cara-frontal { background: linear-gradient(145deg, #FF4500, #B22222); color: white; font-size: 2rem; }
-        .cara-trasera { background: #FFD700; color: #8B0000; font-size: 1.8rem; font-weight: bold; transform: rotateY(180deg); }
+        .cara-frontal { background: linear-gradient(145deg, #FF4500, #B22222); color: white; font-size: 1.8rem; }
+        .cara-trasera { background: #FFD700; color: #8B0000; font-size: 1.6rem; font-weight: bold; transform: rotateY(180deg); }
       `}} />
 
       <div style={styles.card}>
         <div className="moneda-container" onClick={() => setShowRegister(true)}>
           <div className="moneda-giratoria">
             <div className="cara-moneda cara-frontal">🔱</div>
-            <div className="cara-moneda cara-trasera">{usuario ? usuario.nombre?.charAt(0).toUpperCase() : '?'}</div>
+            <div className="cara-moneda cara-trasera">
+              {usuario ? usuario.nombre?.charAt(0).toUpperCase() : '?'}
+            </div>
           </div>
         </div>
 
@@ -92,24 +96,24 @@ export default function WelcomeInicio({ onSelectCategory, usuario }) {
 
 const styles = {
   container: { 
-    height: "100dvh", // Altura dinámica real de la pantalla del iPhone
+    height: "100dvh",
     width: "100vw",
     background: "radial-gradient(circle at center, #3d0a0a 0%, #1a0a0a 100%)", 
     display: "flex", 
     alignItems: "center", 
     justifyContent: "center", 
-    overflow: "hidden", // Prohíbe el scroll por completo
-    position: "fixed",  // Fija la pantalla para que no se mueva al tocar
+    overflow: "hidden",
+    position: "fixed",
     top: 0,
     left: 0
   },
   card: { 
-    padding: "1.2rem", 
+    padding: "1rem", 
     borderRadius: "28px", 
-    width: "85%",      // Deja un 15% de espacio para ver el "tapiz" (fondo)
-    maxWidth: "360px", // Ancho máximo tipo iPhone
+    width: "82%",
+    maxWidth: "340px",
     height: "auto",
-    maxHeight: "85vh", // Asegura que la tarjeta nunca sea más alta que la pantalla
+    maxHeight: "82vh", // Un poco más pequeña para asegurar que se vea el "tapiz"
     textAlign: "center", 
     background: "rgba(255,255,255,0.04)", 
     backdropFilter: "blur(15px)", 
@@ -117,12 +121,12 @@ const styles = {
     boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between" // Distribuye el contenido internamente
+    justifyContent: "space-between"
   },
   titulo: { 
     color: "#fff", 
-    fontSize: "1.6rem", 
-    margin: "0.5rem 0", 
+    fontSize: "1.5rem", 
+    margin: "0.3rem 0", 
     fontFamily: "serif", 
     letterSpacing: '3px',
     textTransform: "uppercase"
@@ -132,12 +136,13 @@ const styles = {
     display: "flex", 
     alignItems: "center", 
     justifyContent: "center", 
-    margin: "0.5rem 0",
-    padding: "0 10px"
+    margin: "0.4rem 0",
+    padding: "0 10px",
+    minHeight: "60px"
   },
   fraseTexto: { 
     color: "#FFD700", 
-    fontSize: "0.85rem", 
+    fontSize: "0.8rem", 
     fontStyle: "italic", 
     lineHeight: "1.4",
     margin: 0
@@ -145,11 +150,11 @@ const styles = {
   gridCategorias: { 
     display: "grid", 
     gridTemplateColumns: "repeat(2, 1fr)", 
-    gap: "0.7rem",
-    marginTop: "0.5rem"
+    gap: "0.6rem",
+    marginTop: "0.4rem"
   },
   btnCat: { 
-    padding: "0.7rem 0.2rem", 
+    padding: "0.6rem 0.2rem", 
     background: "rgba(0,0,0,0.5)", 
     color: "white", 
     border: "1px solid rgba(255,215,0,0.25)", 
@@ -157,14 +162,13 @@ const styles = {
     display: "flex", 
     flexDirection: "column", 
     alignItems: "center",
-    gap: "4px"
+    gap: "2px"
   },
   footer: { 
-    marginTop: "1rem", 
-    fontSize: "0.65rem", 
+    marginTop: "0.8rem", 
+    fontSize: "0.6rem", 
     color: "#FFD700", 
     letterSpacing: "4px", 
     opacity: 0.4 
   }
 };
-

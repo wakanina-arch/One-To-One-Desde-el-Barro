@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CartProvider, useCart } from "./CartContext.jsx";
 import WelcomeInicio from "./WelcomeInicio"; 
 import CategoriaScreen2 from "./components/CategoriaScreen2";
@@ -7,26 +7,25 @@ import SeccionPago from "./components/SeccionPago";
 import TicketConfirmacion from "./components/TicketConfirmacion"; 
 
 const database = {
-  // ... tus datos se mantienen igual
-  primero: { titulo: 'COMPLEMENTOS', icono: '🍟', platos: [...] },
-  segundo: { titulo: 'ENSALADAS', icono: '🥗', platos: [...] },
-  postres: { titulo: 'BEBIDAS', icono: '🥤', platos: [...] },
-  otras: { titulo: 'PIZZAS AL HORNO', icono: '🍕', platos: [...] }
+  primero: { titulo: 'COMPLEMENTOS', icono: '🍟', platos: [] },
+  segundo: { titulo: 'ENSALADAS', icono: '🥗', platos: [] },
+  postres: { titulo: 'BEBIDAS', icono: '🥤', platos: [] },
+  otras: { titulo: 'PIZZAS AL HORNO', icono: '🍕', platos: [] }
 };
 
 function AppContent() {
-  const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart, calculateTotal } = useCart();
+  const { clearCart, calculateTotal } = useCart();
   
   const [pantalla, setPantalla] = useState('welcome');
   const [categoriaActual, setCategoriaActual] = useState(null);
-  const [usuario, setUsuario] = useState(null);
   const [fraseOraculo, setFraseOraculo] = useState(""); 
   const [datosFinales, setDatosFinales] = useState({ total: 0, metodo: '', ordenId: '' });
 
-  useEffect(() => {
+  // 1. CARGA INICIAL DEL USUARIO (Solución al error de ESLint y el bug de sintaxis)
+  const [usuario] = useState(() => {
     const savedUser = localStorage.getItem('oneToOneUser');
-    if (savedUser) setUsuario(JSON.parse(savedUser));
-  }, []);
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
   const totalNeto = calculateTotal();
 
@@ -43,30 +42,31 @@ function AppContent() {
   };
 
   return (
-    /* CONTENEDOR PRINCIPAL: Fondo negro total */
     <div className="App" style={{ 
       width: '100vw', 
-      minHeight: '100vh', 
+      height: '100dvh', 
       background: '#000000', 
       margin: 0, 
       padding: 0,
       display: 'flex',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden' 
     }}>
       
-      {/* WRAPPER RESPONSIVE: Aquí ocurre la magia tipo App móvil */}
       <div style={{
-  width: '100%',
-  maxWidth: '430px',      // Ancho exacto de un iPhone 16 Pro Max para que sea real
-  height: '100vh',        // Altura fija para evitar scroll infinito
-  background: '#1a0a0a', 
-  position: 'relative',
-  overflow: 'hidden',     // Bloquea el scroll exterior
-  display: 'flex',
-  flexDirection: 'column',
-  padding: '20px',        // Esto "encoge" el contenido hacia adentro y deja ver el tapiz
-  boxSizing: 'border-box' // Para que el padding no sume tamaño extra
-}}>
+        width: '88%', // Reducimos ancho para ver el tapiz lateral
+        maxWidth: '430px', 
+        height: '88vh', // Reducimos alto para ver el tapiz superior/inferior
+        background: '#1a0a0a', 
+        position: 'relative',
+        overflow: 'hidden', 
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '35px', 
+        border: '1px solid rgba(255,215,0,0.15)',
+        boxShadow: '0 0 40px rgba(0,0,0,0.9)'
+      }}>
 
         {pantalla === 'welcome' && (
           <WelcomeInicio usuario={usuario} onSelectCategory={irACategoria} />
@@ -111,7 +111,6 @@ function AppContent() {
   );
 }
 
-// Exportación necesaria
 export default function App() {
   return (
     <CartProvider>

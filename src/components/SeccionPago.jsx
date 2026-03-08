@@ -1,48 +1,49 @@
-// src/components/SeccionPago.jsx
 import React, { useState } from 'react';
 
-export default function SeccionPago({ carrito, total, alConfirmar, alVolver, estilos = {} }) {
+export default function SeccionPago({ carrito, total, alConfirmar, alVolver }) {
+
   const [metodo, setMetodo] = useState('tarjeta');
   const [datosContacto, setDatosContacto] = useState({
     nombre: '',
     email: '',
-    telefono: '',
-    notas: ''
+    telefono: ''
+  });
+  
+  // Nuevos estados para la tarjeta
+  const [datosTarjeta, setDatosTarjeta] = useState({
+    numero: '',
+    expira: '',
+    cvv: ''
   });
 
   const [errores, setErrores] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDatosContacto(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    if (errores[name]) {
-      setErrores(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setDatosContacto(prev => ({ ...prev, [name]: value }));
+    if (errores[name]) setErrores(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleCardChange = (e) => {
+    const { name, value } = e.target;
+    // Limitamos caracteres para simular validación real
+    if (name === 'numero' && value.length > 16) return;
+    if (name === 'expira' && value.length > 5) return;
+    if (name === 'cvv' && value.length > 3) return;
+    
+    setDatosTarjeta(prev => ({ ...prev, [name]: value }));
   };
 
   const validarFormulario = () => {
     const nuevosErrores = {};
+    if (!datosContacto.nombre.trim()) nuevosErrores.nombre = 'Requerido';
+    if (!/\S+@\S+\.\S+/.test(datosContacto.email)) nuevosErrores.email = 'Email inválido';
+    if (datosContacto.telefono.length < 9) nuevosErrores.telefono = 'Teléfono incompleto';
     
-    if (!datosContacto.nombre.trim()) {
-      nuevosErrores.nombre = 'El nombre es obligatorio';
-    }
-    
-    if (!datosContacto.email.trim()) {
-      nuevosErrores.email = 'El email es obligatorio';
-    } else if (!/\S+@\S+\.\S+/.test(datosContacto.email)) {
-      nuevosErrores.email = 'Email inválido';
-    }
-    
-    if (!datosContacto.telefono.trim()) {
-      nuevosErrores.telefono = 'El teléfono es obligatorio';
-    } else if (!/^\d{10}$/.test(datosContacto.telefono.replace(/\s/g, ''))) {
-      nuevosErrores.telefono = '10 dígitos';
+    if (metodo === 'tarjeta') {
+      if (datosTarjeta.numero.length < 16) nuevosErrores.numero = 'Incompleto';
+      if (!datosTarjeta.expira.includes('/')) nuevosErrores.expira = 'MM/AA';
+      if (datosTarjeta.cvv.length < 3) nuevosErrores.cvv = 'CVV';
     }
 
     setErrores(nuevosErrores);
@@ -54,315 +55,101 @@ export default function SeccionPago({ carrito, total, alConfirmar, alVolver, est
       alConfirmar({
         metodo,
         contacto: datosContacto,
+        tarjeta: metodo === 'tarjeta' ? '****' + datosTarjeta.numero.slice(-4) : null,
         total,
-        items: carrito
+        items: carrito // Se envían al ticket para el resumen final
       });
     }
   };
 
-  // Estilos ESCALADOS (zoom reducido)
   const styles = {
     contenedor: {
-      padding: '10px',
-      maxWidth: '500px',
-      margin: '15px auto',
-      background: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+      padding: '15px',
+      maxWidth: '400px',
+      margin: '0 auto',
+      background: '#fff',
+      borderRadius: '25px',
       fontFamily: "'Cormorant Garamond', serif",
-      maxHeight: '90vh',
+      height: '100%',
       overflowY: 'auto'
     },
-    titulo: {
-      textAlign: 'center',
-      color: '#8B0000',
-      fontSize: '1.8rem',
-      marginBottom: '8px',
-      borderBottom: '2px solid #FFD700',
-      paddingBottom: '8px'
+    titulo: { textAlign: 'center', color: '#8B0000', fontSize: '1.5rem', marginBottom: '10px' },
+    seccion: { marginBottom: '12px', padding: '10px', background: '#fcfcfc', borderRadius: '15px', border: '1px solid #eee' },
+    label: { display: 'block', marginBottom: '3px', color: '#444', fontWeight: 'bold', fontSize: '0.75rem' },
+    input: { width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.85rem', boxSizing: 'border-box' },
+    gridCard: { display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '8px', marginTop: '10px' },
+    btnPago: {
+      width: '100%', padding: '12px', background: '#8B0000', color: 'white', border: 'none', 
+      borderRadius: '12px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px'
     },
-    subtitulo: {
-      color: '#666',
-      fontSize: '0.9rem',
-      textAlign: 'center',
-      marginBottom: '15px'
-    },
-    seccion: {
-      marginBottom: '15px',
-      padding: '6px',
-      background: '#f9f9f9',
-      borderRadius: '12px',
-      border: '1px solid #eee'
-    },
-    seccionTitulo: {
-      color: '#8B0000',
-      fontSize: '1.1rem',
-      marginBottom: '12px',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px'
-    },
-    grid2: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '8px',
-      marginBottom: '5px'
-    },
-    campo: {
-      marginBottom: '10px'
-    },
-    label: {
-      display: 'block',
-      marginBottom: '4px',
-      color: '#555',
-      fontWeight: 'bold',
-      fontSize: '0.8rem'
-    },
-    input: {
-      width: '95%',
-      padding: '6px 6px',
-      border: `2px solid ${errores.nombre ? '#ff4444' : '#ddd'}`,
-      borderRadius: '8px',
-      fontSize: '0.9rem',
-      transition: 'border 0.3s',
-      outline: 'none'
-    },
-    errorText: {
-      color: '#ff4444',
-      fontSize: '0.7rem',
-      marginTop: '2px',
-      marginLeft: '5px'
-    },
-    // MÉTODOS DE PAGO - AHORA MÁS COMPACTOS
-    metodosPago: {
-      display: 'flex',
-      gap: '6px',
-      marginBottom: '6px',
-      flexWrap: 'wrap'
-    },
-    metodoBtn: {
-      flex: '1 1 auto',
-      minWidth: '70px',
-      padding: '8px 5px',
-      border: '2px solid #ddd',
-      borderRadius: '8px',
-      background: 'white',
-      fontSize: '0.8rem',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.2s',
-      color: '#333',
-      textAlign: 'center'
-    },
-    metodoActivo: {
-      border: '2px solid #8B0000',
-      background: '#fff0f0',
-      transform: 'scale(0.98)'
-    },
-    // Detalles método - texto pequeño
-    metodoDetalle: {
-      fontSize: '0.75rem',
-      color: '#666',
-      margin: '5px 0 8px 0',
-      padding: '3px 5px',
-      background: '#f5f5f5',
-      borderRadius: '6px'
-    },
-    // Resumen pedido - más compacto
-    resumen: {
-      background: '#f0f0f0',
-      padding: '3px',
-      borderRadius: '8px',
-      marginBottom: '12px',
-      maxHeight: '70px',
-      overflowY: 'auto'
-    },
-    itemResumen: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: '0.8rem',
-      padding: '3px 0',
-      borderBottom: '1px dashed #ccc'
-    },
-    total: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: '1.1rem',
-      fontWeight: 'bold',
-      color: '#8B0000',
-      padding: '2px 0 0 0',
-      marginTop: '4px',
-      borderTop: '2px solid #8B0000'
-    },
-    notas: {
-      width: '95%',
-      padding: '2px 2px',
-      border: '2px solid #ddd',
-      borderRadius: '8px',
-      fontSize: '0.85rem',
-      minHeight: '10px',
-      resize: 'vertical'
-    },
-    botonPagar: {
-      width: '100%',
-      padding: '6px',
-      background: '#8B0000',
-      color: 'white',
-      border: 'none',
-      borderRadius: '10px',
-      fontSize: '1.2rem',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      marginBottom: '8px',
-      boxShadow: '0 4px 10px rgba(139, 0, 0, 0.3)'
-    },
-    botonVolver: {
-      width: '100%',
-      padding: '6px',
-      background: 'none',
-      border: '2px solid #ddd',
-      borderRadius: '8px',
-      color: '#666',
-      fontSize: '0.9rem',
-      cursor: 'pointer'
-    }
+    metodosTab: { display: 'flex', gap: '5px', marginBottom: '10px' },
+    tab: (active) => ({
+      flex: 1, padding: '8px 2px', fontSize: '0.7rem', borderRadius: '8px', border: active ? '2px solid #8B0000' : '1px solid #ddd',
+      background: active ? '#fff5f5' : '#f9f9f9', cursor: 'pointer', fontWeight: active ? 'bold' : 'normal'
+    }),
+    error: { color: 'red', fontSize: '0.65rem', marginTop: '2px' }
   };
 
   return (
-    <div style={{ ...styles.contenedor, ...estilos.contenedor }}>
-      <h2 style={styles.titulo}>🍽️ Finalizar Compra</h2>
-      <p style={styles.subtitulo}>Completa tus datos</p>
+    <div style={styles.contenedor}>
+      <h2 style={styles.titulo}>Confirmar Pago</h2>
 
-      {/* DATOS CONTACTO - Grid 2 columnas */}
+      {/* 1. DATOS PERSONALES */}
       <div style={styles.seccion}>
-        <h3 style={styles.seccionTitulo}>📞 Datos de Contacto</h3>
-        
-        <div style={styles.grid2}>
-          <div style={styles.campo}>
-            <label style={styles.label}>Nombre *</label>
-            <input
-              type="text"
-              name="nombre"
-              value={datosContacto.nombre}
-              onChange={handleInputChange}
-              style={styles.input}
-              placeholder="Nombre"
-            />
-            {errores.nombre && <div style={styles.errorText}>{errores.nombre}</div>}
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+          <div>
+            <label style={styles.label}>Nombre</label>
+            <input name="nombre" value={datosContacto.nombre} onChange={handleInputChange} style={styles.input} placeholder="Tu nombre" />
+            {errores.nombre && <span style={styles.error}>{errores.nombre}</span>}
           </div>
-
-          <div style={styles.campo}>
-            <label style={styles.label}>Email *</label>
-            <input
-              type="email"
-              name="email"
-              value={datosContacto.email}
-              onChange={handleInputChange}
-              style={styles.input}
-              placeholder="email@ej.com"
-            />
-            {errores.email && <div style={styles.errorText}>{errores.email}</div>}
-          </div>
-
-          <div style={styles.campo}>
-            <label style={styles.label}>Teléfono *</label>
-            <input
-              type="tel"
-              name="telefono"
-              value={datosContacto.telefono}
-              onChange={handleInputChange}
-              style={styles.input}
-              placeholder="0999999999"
-            />
-            {errores.telefono && <div style={styles.errorText}>{errores.telefono}</div>}
+          <div>
+            <label style={styles.label}>Teléfono</label>
+            <input name="telefono" value={datosContacto.telefono} onChange={handleInputChange} style={styles.input} placeholder="09..." />
           </div>
         </div>
+        <label style={{...styles.label, marginTop: '8px'}}>Email</label>
+        <input name="email" value={datosContacto.email} onChange={handleInputChange} style={styles.input} placeholder="correo@app.com" />
       </div>
 
-      {/* MÉTODOS DE PAGO - COMPACTOS */}
+      {/* 2. MÉTODOS Y DATOS DE TARJETA */}
       <div style={styles.seccion}>
-        <h3 style={styles.seccionTitulo}>💳 Método de Pago</h3>
-
-        <div style={styles.metodosPago}>
-          {[
-            { id: 'tarjeta', label: '💳 Tarjeta' },
-            { id: 'efectivo', label: '💵 Efectivo' },
-            { id: 'deuna', label: '📱 Deuna' },
-            { id: 'paypal', label: '🅿️ PayPal' }
-          ].map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setMetodo(m.id)}
-              style={{
-                ...styles.metodoBtn,
-                ...(metodo === m.id ? styles.metodoActivo : {})
-              }}
-            >
-              {m.label}
+        <div style={styles.metodosTab}>
+          {['tarjeta', 'efectivo', 'deuna'].map(m => (
+            <button key={m} onClick={() => setMetodo(m)} style={styles.tab(metodo === m)}>
+              {m.toUpperCase()}
             </button>
           ))}
         </div>
 
-        {/* Detalles del método - texto pequeño */}
         {metodo === 'tarjeta' && (
-          <div style={styles.metodoDetalle}>
-            <span>Aceptamos Visa, Mastercard, Diners</span>
-          </div>
-        )}
-        {metodo === 'deuna' && (
-          <div style={styles.metodoDetalle}>
-            <span>Escanea QR en app Deuna</span>
-          </div>
-        )}
-        {metodo === 'paypal' && (
-          <div style={styles.metodoDetalle}>
-            <span>Redirigimos a PayPal seguro</span>
-          </div>
-        )}
-        {metodo === 'efectivo' && (
-          <div style={{ ...styles.metodoDetalle, color: '#27ae60' }}>
-            <span>✅ Pagas al recibir</span>
-          </div>
-        )}
-      </div>
-
-      {/* NOTAS - Opcional */}
-      <div style={styles.seccion}>
-        <h3 style={styles.seccionTitulo}>📝 Notas (opcional)</h3>
-        <textarea
-          name="notas"
-          value={datosContacto.notas}
-          onChange={handleInputChange}
-          placeholder="¿Alguna instrucción?"
-          style={styles.notas}
-        />
-      </div>
-
-      {/* RESUMEN DEL PEDIDO - COMPACTO */}
-      <div style={styles.seccion}>
-        <h3 style={styles.seccionTitulo}>🛒 Resumen</h3>
-        <div style={styles.resumen}>
-          {carrito.map((item, idx) => (
-            <div key={idx} style={styles.itemResumen}>
-              <span>{item.nombre} x{item.cantidad}</span>
-              <span>${(item.precio * item.cantidad).toFixed(2)}</span>
+          <div style={{animation: 'fadeIn 0.3s'}}>
+            <label style={styles.label}>Número de Tarjeta</label>
+            <input name="numero" type="number" value={datosTarjeta.numero} onChange={handleCardChange} style={styles.input} placeholder="0000 0000 0000 0000" />
+            
+            <div style={styles.gridCard}>
+              <div>
+                <label style={styles.label}>Expira</label>
+                <input name="expira" value={datosTarjeta.expira} onChange={handleCardChange} style={styles.input} placeholder="MM/AA" />
+              </div>
+              <div>
+                <label style={styles.label}>CVV</label>
+                <input name="cvv" type="number" value={datosTarjeta.cvv} onChange={handleCardChange} style={styles.input} placeholder="123" />
+              </div>
             </div>
-          ))}
-          <div style={styles.total}>
-            <span>TOTAL</span>
-            <span>${total}</span>
           </div>
-        </div>
+        )}
+        
+        {metodo === 'efectivo' && <p style={{fontSize: '0.8rem', textAlign: 'center', color: '#666'}}>Pagará al recibir su pedido.</p>}
       </div>
 
-      {/* BOTONES */}
-      <button onClick={handlePagar} style={styles.botonPagar}>
-        💳 PAGAR ${total}
-      </button>
+      {/* 3. TOTAL Y ACCIÓN */}
+      <div style={{textAlign: 'center', padding: '10px 0'}}>
+        <span style={{fontSize: '0.9rem', color: '#666'}}>Total a pagar:</span>
+        <div style={{fontSize: '1.8rem', fontWeight: 'bold', color: '#8B0000'}}>${total.toFixed(2)}</div>
+      </div>
 
-      <button onClick={alVolver} style={styles.botonVolver}>
-        ← VOLVER
-      </button>
+      <button onClick={handlePagar} style={styles.btnPago}>PAGAR AHORA</button>
+      <button onClick={alVolver} style={{width: '100%', background: 'none', border: 'none', color: '#888', marginTop: '10px', fontSize: '0.8rem'}}>← Volver al carrito</button>
     </div>
   );
 }

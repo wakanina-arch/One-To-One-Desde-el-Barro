@@ -1,76 +1,130 @@
 import React from 'react';
-import CodigoQR from './CodigoQR'; 
+import CodigoQR from './CodigoQR'; // Asegúrate de que el archivo se llame así
 
 export default function TicketConfirmacion({ 
-  pedido = [], 
-  total, 
-  metodo = "tarjeta", 
-  alFinalizar, 
-  fraseMistica, // ← Aquí estaba el error, faltaba la coma
-  ordenId 
+  datos = {}, // Recibimos el objeto 'datosFinales' desde App.jsx
+  pedido = [], // Los items que vienen del carrito
+  onCerrar 
 }) {
   
-  // Usamos el ID que viene de la App
-  const idFinal = ordenId || `OTO-PENDIENTE`;
+  // Extraemos la info de los datos finales o valores por defecto
+  const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta" } = datos;
 
   return (
-    <div style={styles.ticketCard}>
-      <h2 style={{ color: '#8B0000', marginBottom: '5px' }}>¡PEDIDO CONFIRMADO!</h2>
-      <p style={{ color: '#666', fontSize: '0.9rem' }}>Gracias por elegir el Palacio del Sabor</p>
-      
-      <div style={styles.ordenBox}>
-        <span style={{ fontSize: '0.8rem', color: '#999', display: 'block' }}>NÚMERO DE ORDEN</span>
-        <strong style={{ fontSize: '1.8rem', color: '#333', letterSpacing: '2px' }}>{idFinal}</strong>
-      </div>
-
-      <div style={styles.qrContainer}>
-        <CodigoQr valor={idFinal} tamaño={160} />
-      </div>
-
-      <div style={styles.cajaOraculo}>
-        <p style={styles.fraseFinal}>
-          "{fraseMistica || "que tu alimento sea medicina y tu encuentro una alegría..."}"
-        </p>
-      </div>
-
-      <div style={styles.resumenContainer}>
-        <p style={{ fontWeight: 'bold', borderBottom: '1px solid #eee', marginBottom: '10px', fontSize: '0.7rem' }}>
-          RESGUARDO DEL BANQUETE:
-        </p>
-        {Array.isArray(pedido) && pedido.length > 0 ? (
-          pedido.map((item, idx) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.85rem' }}>
-              <span>{item.nombre} (x{item.cantidad || 1})</span>
-              <span>${((item.precio || 0) * (item.cantidad || 1)).toFixed(2)}</span>
-            </div>
-          ))
-        ) : (
-          <p>Cargando detalle...</p>
-        )}
-      </div>
-
-      <div style={styles.footer}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-          <span>TOTAL PAGADO:</span>
-          <span style={{ color: '#8B0000' }}>${total}</span>
+    <div style={styles.container}>
+      <div style={styles.ticketCard}>
+        <div style={styles.header}>
+          <h2 style={styles.brand}>ONE TO ONE</h2>
+          <p style={styles.tagline}>— DESDE EL BARRO —</p>
         </div>
-      </div>
+        
+        <div style={styles.ordenBox}>
+          <span style={styles.label}>NÚMERO DE ORDEN</span>
+          <strong style={styles.idTexto}>{ordenId}</strong>
+        </div>
 
-      <button onClick={alFinalizar} style={styles.btnVolver}>
-        VOLVER AL PORTAL 🔱
-      </button>
+        {/* QR CENTRADO */}
+        <div style={styles.qrWrapper}>
+          <CodigoQR valor={ordenId} tamaño={140} />
+        </div>
+
+        {/* RESUMEN DETALLADO (Lo que pediste mover aquí) */}
+        <div style={styles.resumenContainer}>
+          <p style={styles.resumenTitulo}>DETALLE DEL BANQUETE</p>
+          <div style={styles.listaItems}>
+            {pedido.length > 0 ? (
+              pedido.map((item, idx) => (
+                <div key={idx} style={styles.itemRow}>
+                  <span>{item.nombre} x{item.cantidad}</span>
+                  <span>${(item.precio * item.cantidad).toFixed(2)}</span>
+                </div>
+              ))
+            ) : (
+              <p style={{fontSize: '0.7rem', textAlign: 'center'}}>Consulta tu orden en barra</p>
+            )}
+          </div>
+          
+          <div style={styles.divider}></div>
+          
+          <div style={styles.totalRow}>
+            <span>TOTAL ({metodo.toUpperCase()})</span>
+            <span>${Number(total).toFixed(2)}</span>
+          </div>
+        </div>
+
+        <button onClick={onCerrar} style={styles.btnVolver}>
+          FINALIZAR Y VOLVER 🔱
+        </button>
+        
+        <p style={styles.footerNote}>Presenta este QR en el mostrador</p>
+      </div>
     </div>
   );
 }
 
 const styles = {
-  ticketCard: { padding: '30px', maxWidth: '380px', margin: '20px auto', background: '#fdfaf6', borderRadius: '30px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)', textAlign: 'center', border: '2px solid #FFD700', fontFamily: "'Cormorant Garamond', serif" },
-  ordenBox: { margin: '15px 0', padding: '15px', background: '#fff', borderRadius: '15px', border: '1px dashed #FFD700' },
-  qrContainer: { margin: '20px auto', width: '180px', height: '180px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '15px' },
-  cajaOraculo: { margin: '15px 0', padding: '12px 8px', borderTop: '1px solid #FFD700', borderBottom: '1px solid #FFD700', background: 'rgba(255, 215, 0, 0.03)' },
-  fraseFinal: { fontStyle: 'italic', color: '#8B0000', fontSize: '1rem', lineHeight: '1.3', margin: 0 },
-  resumenContainer: { textAlign: 'left', padding: '12px', background: 'rgba(0,0,0,0.02)', borderRadius: '15px' },
-  footer: { borderTop: '1px solid #eee', marginTop: '10px', paddingTop: '15px', textAlign: 'left' },
-  btnVolver: { width: '100%', marginTop: '20px', padding: '16px', background: 'linear-gradient(135deg, #FF4500, #B22222)', color: 'white', border: 'none', borderRadius: '18px', fontWeight: '800', cursor: 'pointer' }
+  container: {
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#1a0a0a', // Mantenemos el fondo oscuro de la app
+    padding: '10px'
+  },
+  ticketCard: { 
+    padding: '20px', 
+    width: '90%',
+    maxWidth: '340px', 
+    background: '#fff', // Color papel para que resalte el QR
+    borderRadius: '25px', 
+    boxShadow: '0 15px 35px rgba(0,0,0,0.5)', 
+    textAlign: 'center',
+    fontFamily: "serif",
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  },
+  header: { marginBottom: '15px' },
+  brand: { color: '#8B0000', margin: 0, fontSize: '1.6rem', letterSpacing: '2px' },
+  tagline: { fontSize: '0.6rem', color: '#999', margin: 0 },
+  ordenBox: { 
+    margin: '10px 0', 
+    padding: '10px', 
+    background: '#f9f9f9', 
+    borderRadius: '12px', 
+    border: '1px dashed #ccc' 
+  },
+  label: { fontSize: '0.65rem', color: '#888', display: 'block' },
+  idTexto: { fontSize: '1.4rem', color: '#333' },
+  qrWrapper: { 
+    margin: '10px auto', 
+    padding: '10px',
+    background: '#fff',
+    display: 'inline-block',
+    border: '1px solid #eee',
+    borderRadius: '10px'
+  },
+  resumenContainer: { 
+    textAlign: 'left', 
+    padding: '10px', 
+    background: '#fafafa', 
+    borderRadius: '12px',
+    marginTop: '10px'
+  },
+  resumenTitulo: { fontSize: '0.7rem', fontWeight: 'bold', borderBottom: '1px solid #eee', paddingBottom: '5px', marginBottom: '8px', color: '#666' },
+  listaItems: { maxHeight: '100px', overflowY: 'auto' },
+  itemRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '4px', color: '#444' },
+  divider: { height: '1px', background: '#eee', margin: '8px 0' },
+  totalRow: { display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '0.9rem', color: '#8B0000' },
+  btnVolver: { 
+    width: '100%', 
+    marginTop: '15px', 
+    padding: '12px', 
+    background: '#1a0a0a', 
+    color: '#FFD700', 
+    border: 'none', 
+    borderRadius: '15px', 
+    fontWeight: 'bold', 
+    cursor: 'pointer' 
+  },
+  footerNote: { fontSize: '0.6rem', color: '#bbb', marginTop: '10px' }
 };
-
