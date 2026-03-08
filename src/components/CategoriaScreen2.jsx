@@ -18,20 +18,13 @@ export default function CategoriaScreen2({ categoria, onAgregar, onCarritoClick,
       <style dangerouslySetInnerHTML={{ __html: `
         .img-proyeccion { width: 100%; height: 100%; object-fit: cover; }
         .scroll-hidden::-webkit-scrollbar { display: none; }
-        .cintillo-tv { 
-          position: absolute; bottom: 0; left: 0; width: 100%;
-          background: linear-gradient(to right, rgba(139,0,0,0.9), rgba(0,0,0,0.6));
-          backdrop-filter: blur(5px); padding: 5px 15px;
-          display: flex; align-items: center; justify-content: space-around;
-          border-top: 1px solid rgba(255,215,0,0.3); z-index: 10;
-        }
       `}} />
 
       <BarraSuperior usuario={usuario} onCarritoClick={onCarritoClick} carritoCount={carritoCount} onMenuClick={onBack} />
 
       <div style={styles.contenido}>
         
-        {/* VISOR CINEMATOGRÁFICO */}
+        {/* VISOR CINEMATOGRÁFICO LIMPIO */}
         <div style={styles.visorCard}>
           <div style={styles.marcoImagen}>
             {platoEnFoco && (
@@ -40,19 +33,9 @@ export default function CategoriaScreen2({ categoria, onAgregar, onCarritoClick,
                 src={platoEnFoco.imagen.startsWith('/') ? platoEnFoco.imagen : `/${platoEnFoco.imagen}`} 
                 alt={platoEnFoco.nombre}
                 className="img-proyeccion"
-                onError={(e) => { e.target.src = "https://via.placeholder.com"; }}
+                onError={(e) => { e.target.src = "https://via.placeholder.com..."; }}
               />
             )}
-            
-            {/* CINTILLO TIPO TITULAR DE TV (FLOAT OVER IMAGE) */}
-            <div className="cintillo-tv">
-              <Nutricion 
-                calorias={platoEnFoco?.kcal || 0} 
-                proteinas={platoEnFoco?.prot || 0} 
-                carbohidratos={platoEnFoco?.carb || 0} 
-                estilo="slim" // Asumiendo que tu componente Nutricion acepta estilos compactos
-              />
-            </div>
           </div>
 
           <div style={styles.detallePlato}>
@@ -82,7 +65,15 @@ export default function CategoriaScreen2({ categoria, onAgregar, onCarritoClick,
           </div>
         </div>
 
+        {/* ACCIÓN FINAL: NUTRICIÓN Y BOTÓN AL 50/50 */}
         <div style={styles.footerAccion}>
+          <div style={styles.cintilloInformativo}>
+            <Nutricion 
+              calorias={platoEnFoco?.kcal || 0} 
+              proteinas={platoEnFoco?.prot || 0} 
+              carbohidratos={platoEnFoco?.carb || 0} 
+            />
+          </div>
           <button onClick={() => onAgregar(platoEnFoco)} style={styles.btnAgregar}>
             AÑADIR • ${platoEnFoco?.precio.toFixed(2)}
           </button>
@@ -104,6 +95,34 @@ const styles = {
   scrollOpciones: { display: 'flex', flexDirection: 'column', gap: '8px', paddingBottom: '10px' },
   platoOption: { display: "flex", alignItems: "center", padding: "12px", borderRadius: "15px", border: "1px solid", transition: "0.2s" },
   textoPlato: { flex: 1, display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' },
-  footerAccion: { paddingBottom: "10px" },
-  btnAgregar: { width: "100%", padding: "16px", background: "linear-gradient(135deg, #FF4500, #B22222)", color: "white", border: "none", borderRadius: "18px", fontWeight: "900", fontSize: '1rem' }
+  
+  // NUEVA ESTRUCTURA DEL FOOTER
+  footerAccion: { 
+    display: "flex", 
+    alignItems: "center", 
+    gap: "10px", 
+    padding: "15px 0",
+    borderTop: "1px solid rgba(255,215,0,0.2)"
+  },
+  cintilloInformativo: { 
+    flex: 1, 
+    background: "rgba(255,255,255,0.05)", 
+    borderRadius: "15px", 
+    padding: "5px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    border: "1px solid rgba(255,255,255,0.1)"
+  },
+  btnAgregar: { 
+    flex: 1, 
+    padding: "16px 10px", 
+    background: "linear-gradient(135deg, #FF4500, #B22222)", 
+    color: "white", 
+    border: "none", 
+    borderRadius: "18px", 
+    fontWeight: "900", 
+    fontSize: "0.9rem",
+    boxShadow: "0 4px 15px rgba(255, 69, 0, 0.3)"
+  }
 };
