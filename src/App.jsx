@@ -45,7 +45,7 @@ const database = {
       { id: 301, nombre: 'Agua Mineral', precio: 1.50, imagen: '/img/postres/AguaMineral.jpg', kcal: 0, prot: 0, carb: 0 },
       { id: 302, nombre: 'Cerveza Club', precio: 3.50, imagen: '/img/postres/CervezaClub.jpg', kcal: 150, prot: 1, carb: 12 },
       { id: 305, nombre: 'Coca Cola', precio: 2.50, imagen: '/img/postres/CocaCola.jpg', kcal: 140, prot: 0, carb: 35 },
-      { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 }
+      { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 }, { id: 310, nombre: 'Café Espresso', precio: 1.80, imagen: '/img/postres/CafeEspresso.jpg', kcal: 5, prot: 0, carb: 1 }, { id: 311, nombre: 'Té Verde', precio: 2.00, imagen: '/img/postres/TeVerde.jpg', kcal: 0, prot: 0, carb: 0 }, { id: 312, nombre: 'Limonada Casera', precio: 2.50, imagen: '/img/postres/LimonadaCasera.jpg', kcal: 120, prot: 0, carb: 30 }
     ]
   },
   otras: { 
@@ -53,7 +53,7 @@ const database = {
     platos: [
       { id: 401, nombre: 'Pizza Carbonara', precio: 13.50, imagen: '/img/otras/Carbonara.jpg', kcal: 900, prot: 35, carb: 80 },
       { id: 405, nombre: 'Pizza Margherita', precio: 11.00, imagen: '/img/otras/Margherita.jpg', kcal: 700, prot: 22, carb: 80 },
-      { id: 408, nombre: 'Pizza Pepperoni', precio: 13.50, imagen: '/img/otras/Pepperoni.jpg', kcal: 950, prot: 32, carb: 85 }
+      { id: 408, nombre: 'Pizza Pepperoni', precio: 13.50, imagen: '/img/otras/Pepperoni.jpg', kcal: 950, prot: 32, carb: 85 }, { id: 410, nombre: 'Pizza Vegetariana', precio: 12.00, imagen: '/img/otras/Vegetariana.jpg', kcal: 750, prot: 28, carb: 80 }, { id: 411, nombre: 'Pizza Hawaiana', precio: 13.00, imagen: '/img/otras/Hawaiana.jpg', kcal: 850, prot: 30, carb: 80 }, { id: 412, nombre: 'Pizza Cuatro Quesos', precio: 14.00, imagen: '/img/otras/CuatroQuesos.jpg', kcal: 1000, prot: 40, carb: 90 }
     ] 
   }
 };
@@ -85,12 +85,24 @@ function AppContent() {
     setPantalla('categoria');
   };
 
-  const finalizarCompra = (metodoElegido) => {
-    console.log('💳 finalizarCompra:', metodoElegido); // LOG
-    const idGenerado = `QR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    setDatosFinales({ total: totalNeto, metodo: metodoElegido, ordenId: idGenerado });
-    setPantalla('ticket');
-  };
+ const finalizarCompra = (datosPago) => {
+  console.log('💳 finalizarCompra - datos:', datosPago);
+  
+  // Si datosPago es un string (método solo), lo convertimos a objeto
+  const metodoPago = typeof datosPago === 'string' ? datosPago : datosPago.metodo;
+  const datosContacto = typeof datosPago === 'object' ? datosPago.datosContacto : {};
+  
+  const idGenerado = `QR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+  
+  setDatosFinales({ 
+    total: totalNeto, 
+    metodo: metodoPago, 
+    ordenId: idGenerado,
+    datosContacto: datosContacto // Guardamos también los datos de contacto
+  });
+  
+  setPantalla('ticket');
+};
 
   return (
     <div className="App" style={{ 

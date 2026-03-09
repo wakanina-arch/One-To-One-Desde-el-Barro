@@ -10,7 +10,7 @@ export default function CategoriaScreen2({
   carritoCount, 
   onBack, 
   usuario,
-  frase 
+
 }) {
   const platos = categoria?.platos || [];
   const [platoEnFoco, setPlatoEnFoco] = useState(null);
@@ -121,23 +121,25 @@ export default function CategoriaScreen2({
 const styles = {
   salonContainer: { 
     height: "100%", width: "100%", 
-    background: "radial-gradient(circle at center, #3d0a0a 0%, #000 100%)", 
+    background: "radial-gradient(circle at center, #3d0a0a 0%, #1a0a0a 100%)", 
     display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' 
   },
   wrapperEscalado: {
-    width: "88%", height: "88%", background: "#1a0a0a", borderRadius: "35px",
+    width: "88%", height: "88%", //background: "#1a0a0a",
+     borderRadius: "35px",
     display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    border: '1px solid rgba(255,215,0,0.15)', boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
+    //border: '1px solid rgba(255,215,0,0.15)',
+    //boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
   },
   contenido: { flex: 1, padding: "12px", display: 'flex', flexDirection: 'column', overflow: 'hidden' },
   visorCard: { background: "#fff", borderRadius: "20px", overflow: "hidden", marginBottom: "8px", flexShrink: 0 },
-  marcoImagen: { width: "100%", height: "180px", background: "#000", position: 'relative' },
+  marcoImagen: { width: "100%", height: "240px", background: "#000", position: 'relative' },
   detallePlato: { padding: "8px 5px", textAlign: 'center', background: '#fff' },
   nombrePlato: { color: "#1a0a0a", fontSize: "0.85rem", margin: "0", fontWeight: '900' },
   listaOpciones: { flex: 1, overflowY: "auto", margin: "8px 0" },
   scrollOpciones: { display: 'flex', flexDirection: 'column', gap: '6px' },
   platoOption: { display: "flex", alignItems: "center", padding: "10px", borderRadius: "12px", border: "1px solid", transition: "0.2s", cursor: "pointer" },
-  textoPlato: { flex: 1, display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' },
+  textoPlato: { flex: 1, display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' },
   footerAccion: { 
     display: "flex", 
     alignItems: "stretch",

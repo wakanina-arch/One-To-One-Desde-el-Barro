@@ -6,6 +6,9 @@ export default function TicketConfirmacion({
   pedido = [], // Los items que vienen del carrito
   onCerrar 
 }) {
+
+  console.log('🎫 TicketConfirmacion - datos:', datos); // AÑADE ESTE LOG
+  console.log('🎫 TicketConfirmacion - pedido:', pedido); // AÑADE ESTE LOG
   
   // Extraemos la info de los datos finales o valores por defecto
   const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta" } = datos;

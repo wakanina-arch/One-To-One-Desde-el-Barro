@@ -13,7 +13,7 @@ export default function Carrusel({ imagenes = [], estiloCine = true }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        color: "#FFD700"
+        color: "#2600ff"
       }}>
         <div style={{ fontSize: '3rem', marginBottom: '10px' }}>🥘</div>
         <p style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}>
