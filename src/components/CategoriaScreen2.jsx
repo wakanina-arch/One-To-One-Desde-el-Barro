@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import BarraSuperior from "../layout/BarraSuperior"; 
 import Nutricion from "./Nutricion"; 
 
-// CORREGIDO: Cambiamos 'onCarritoClick' por 'onVerCarrito' para que coincida con App.jsx
 export default function CategoriaScreen2({ 
   categoria, 
   onAddToCart, 
-  onVerCarrito,  // <--- CAMBIADO de onCarritoClick a onVerCarrito
+  onVerCarrito,
   carritoCount, 
   onBack, 
   usuario,
-
+  frase
 }) {
   const platos = categoria?.platos || [];
   const [platoEnFoco, setPlatoEnFoco] = useState(null);
@@ -19,24 +18,17 @@ export default function CategoriaScreen2({
     if (platos.length > 0) {
       setPlatoEnFoco(platos[0]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoria?.titulo]); 
 
-  // Función para manejar el clic en AÑADIR
   const handleAddClick = () => {
-    console.log('➕ handleAddClick - platoEnFoco:', platoEnFoco); // LOG
     if (platoEnFoco && onAddToCart) {
       onAddToCart(platoEnFoco);
     }
   };
 
-  // Función para manejar el clic en el carrito
   const handleCarritoClick = () => {
-    console.log('🛒 handleCarritoClick - carritoCount:', carritoCount); // LOG
     if (onVerCarrito) {
       onVerCarrito();
-    } else {
-      console.error('❌ onVerCarrito es undefined');
     }
   };
 
@@ -48,16 +40,16 @@ export default function CategoriaScreen2({
       `}} />
 
       <div style={styles.wrapperEscalado}>
-        {/* CORREGIDO: Pasamos handleCarritoClick en lugar de onCarritoClick */}
         <BarraSuperior 
           usuario={usuario} 
-          onCarritoClick={handleCarritoClick}  // <--- AHORA USA LA FUNCIÓN CORRECTA
+          onCarritoClick={handleCarritoClick}
           carritoCount={carritoCount} 
           onMenuClick={onBack} 
         />
 
         <div style={styles.contenido}>
-          
+          <p style={styles.frase}>{frase}</p>
+          {/* 🔥 ELEMENTO FUEGO - La imagen (pasión, protagonismo) */}
           <div style={styles.visorCard}>
             <div style={styles.marcoImagen}>
               {platoEnFoco && (
@@ -67,7 +59,6 @@ export default function CategoriaScreen2({
                   alt={platoEnFoco.nombre}
                   className="img-proyeccion"
                   onError={(e) => { 
-                    console.log('Error cargando imagen:', platoEnFoco.imagen);
                     e.target.src = "https://via.placeholder.com/300x200?text=Imagen+no+disponible"; 
                   }}
                 />
@@ -78,6 +69,7 @@ export default function CategoriaScreen2({
             </div>
           </div>
 
+          {/* 🌱 ELEMENTO MADERA - Lista de opciones (crecimiento, elección) */}
           <div style={styles.listaOpciones}>
             <div className="scroll-hidden" style={styles.scrollOpciones}>
               {platos.map((plato) => (
@@ -91,15 +83,17 @@ export default function CategoriaScreen2({
                   }}
                 >
                   <div style={styles.textoPlato}>
-                    <span style={{color: 'white'}}>{plato.nombre}</span>
-                    <span style={{color: '#FFD700', fontWeight: 'bold'}}>${plato.precio.toFixed(2)}</span>
+                    <span style={styles.nombreOpcion}>{plato.nombre}</span>
+                    <span style={styles.precioOpcion}>${plato.precio.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* ⚖️ EQUILIBRIO YIN-YANG - Footer con acciones */}
           <div style={styles.footerAccion}>
+            {/* 💧 ELEMENTO AGUA - Nutrición (fluidez, información sutil) */}
             <div style={styles.bloqueNutricion}>
               <Nutricion 
                 calorias={platoEnFoco?.kcal || 0} 
@@ -107,8 +101,10 @@ export default function CategoriaScreen2({
                 carbohidratos={platoEnFoco?.carb || 0} 
               />
             </div>
+            
+            {/* 🔥 ELEMENTO FUEGO - Botón Añadir (acción, transformación) */}
             <button onClick={handleAddClick} style={styles.btnAgregar}>
-              AÑADIR <span style={{ filter: 'brightness(0) invert(1)', marginLeft: '8px' }}>🛒</span>
+              AÑADIR
             </button>
           </div>
 
@@ -120,56 +116,147 @@ export default function CategoriaScreen2({
 
 const styles = {
   salonContainer: { 
-    height: "100%", width: "100%", 
+    height: "100%", 
+    width: "100%", 
     background: "radial-gradient(circle at center, #3d0a0a 0%, #1a0a0a 100%)", 
-    display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    overflow: 'hidden' 
   },
+  
   wrapperEscalado: {
-    width: "88%", height: "88%", //background: "#1a0a0a",
-     borderRadius: "35px",
-    display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    //border: '1px solid rgba(255,215,0,0.15)',
-    //boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
+    width: "88%", 
+    height: "88%",
+    borderRadius: "35px",
+    display: 'flex', 
+    flexDirection: 'column', 
+    overflow: 'hidden',
   },
-  contenido: { flex: 1, padding: "12px", display: 'flex', flexDirection: 'column', overflow: 'hidden' },
-  visorCard: { background: "#fff", borderRadius: "20px", overflow: "hidden", marginBottom: "8px", flexShrink: 0 },
-  marcoImagen: { width: "100%", height: "240px", background: "#000", position: 'relative' },
-  detallePlato: { padding: "8px 5px", textAlign: 'center', background: '#fff' },
-  nombrePlato: { color: "#1a0a0a", fontSize: "0.85rem", margin: "0", fontWeight: '900' },
-  listaOpciones: { flex: 1, overflowY: "auto", margin: "8px 0" },
-  scrollOpciones: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  platoOption: { display: "flex", alignItems: "center", padding: "10px", borderRadius: "12px", border: "1px solid", transition: "0.2s", cursor: "pointer" },
-  textoPlato: { flex: 1, display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' },
+  
+  contenido: { 
+    flex: 1, 
+    padding: "12px 12px", 
+    display: 'flex', 
+    flexDirection: 'column', 
+    overflow: 'hidden',
+    gap: "12px"  // ← Añadido espacio consistente
+  },
+  
+  // 🖼️ VISOR DE IMAGEN (Protagonista pero no abrumador)
+  visorCard: { 
+    background: "#fff", 
+    borderRadius: "24px", 
+    overflow: "hidden", 
+    flexShrink: 0,
+    boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
+  },
+  
+  marcoImagen: { 
+    width: "100%", 
+    height: "240px",  // ← Reducido de 240px para dar más espacio a la lista
+    background: "#000", 
+    position: 'relative' 
+  },
+  
+  detallePlato: { 
+    padding: "8px 5px", 
+    textAlign: 'center', 
+    background: '#fff' 
+  },
+  
+  nombrePlato: { 
+    color: "#1a0a0a", 
+    fontSize: "0.9rem", 
+    margin: "0", 
+    fontWeight: '600',  // ← Reducido de 900 para más elegancia
+    letterSpacing: "0.5px"
+  },
+  
+  // 📋 LISTA DE OPCIONES (Madera - crecimiento natural)
+  listaOpciones: { 
+    flex: 1, 
+    overflowY: "auto", 
+  },
+  
+  scrollOpciones: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '8px',
+    paddingRight: "4px"
+  },
+  
+  platoOption: { 
+    display: "flex", 
+    alignItems: "center", 
+    padding: "12px 14px",  // ← Aumentado ligeramente
+    borderRadius: "16px",   // ← Aumentado para más suavidad
+    border: "1px solid", 
+    transition: "all 0.2s ease", 
+    cursor: "pointer",
+    backdropFilter: "blur(5px)"
+  },
+  
+  textoPlato: { 
+    flex: 1, 
+    display: 'flex', 
+    justifyContent: 'space-between', 
+    alignItems: "center",
+    fontSize: '0.9rem' 
+  },
+  
+  nombreOpcion: {
+    color: '#fff',
+    fontWeight: '400',  // ← Menos peso que el botón
+    fontSize: '0.9rem'
+  },
+  
+  precioOpcion: {
+    color: '#FFD700',
+    fontWeight: '600',  // ← Menos que el botón
+    fontSize: '0.9rem'
+  },
+  
+  // ⚖️ FOOTER EQUILIBRADO
   footerAccion: { 
     display: "flex", 
-    alignItems: "stretch",
+    alignItems: "center",
     gap: "10px", 
-    padding: "10px 0"
+    paddingTop: "1px",  // ← Reducido
+    flexShrink: 0
   },
+  
+  // 💧 NUTRICIÓN (Agua - sutil, fluido)
   bloqueNutricion: { 
     flex: 1, 
-    background: "rgba(255,255,255,0.08)", 
-    borderRadius: "15px", 
+    background: "rgba(255,255,255,0.05)",  // ← Más sutil
+    borderRadius: "20px", 
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid rgba(255,255,255,0.15)"
+    border: "1px solid rgba(255,215,0,0.1)",  // ← Borde más sutil
+    padding: "0 5px",
+    minHeight: "40px"  // ← Altura fija para consistencia
   },
+  
+  // 🔥 BOTÓN AÑADIR (Fuego - acción, pero no abruma)
   btnAgregar: { 
     flex: 1, 
-    padding: "14px 5px", 
-    background: "linear-gradient(135deg, #FF4500, #B22222)", 
+    padding: "0 5px", 
+    background: "linear-gradient(135deg, #B22222, #8B0000)",  // ← Menos intenso
     color: "#FFFFFF",
     border: "none", 
-    borderRadius: "15px", 
-    fontWeight: "900", 
-    fontSize: "1rem", 
+    borderRadius: "20px", 
+    fontWeight: "600",  // ← Reducido de 900
+    fontSize: "0.9rem",  // ← Reducido de 1rem
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    gap: "8px",
-    boxShadow: "0 4px 15px rgba(255, 69, 0, 0.3)",
+    gap: "6px",
+    boxShadow: "0 2px 8px rgba(139, 0, 0, 0.3)",  // ← Sombra más sutil
     cursor: "pointer",
-    textShadow: "0 1px 2px rgba(0,0,0,0.2)"
+    letterSpacing: "0.5px",
+    minHeight: "40px",  // ← Misma altura que nutrición
+    transition: "all 0.2s ease"
   }
 };

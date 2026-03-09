@@ -79,16 +79,17 @@ function AppContent() {
   const totalNeto = calculateTotal();
 
   const irACategoria = (id, fraseRecibida) => {
-    console.log('➡️ irACategoria:', id); // LOG
+    console.log('➡️ App - frase recibida:', fraseRecibida);
     if (fraseRecibida) setFraseOraculo(fraseRecibida); 
     setCategoriaActual(id); 
     setPantalla('categoria');
   };
 
  const finalizarCompra = (datosPago) => {
-  console.log('💳 finalizarCompra - datos:', datosPago);
+   console.log('💳 finalizarCompra - datos:', datosPago);
+    console.log('💳 App - frase antes de ticket:', fraseOraculo);
   
-  // Si datosPago es un string (método solo), lo convertimos a objeto
+  
   const metodoPago = typeof datosPago === 'string' ? datosPago : datosPago.metodo;
   const datosContacto = typeof datosPago === 'object' ? datosPago.datosContacto : {};
   
@@ -98,7 +99,8 @@ function AppContent() {
     total: totalNeto, 
     metodo: metodoPago, 
     ordenId: idGenerado,
-    datosContacto: datosContacto // Guardamos también los datos de contacto
+    datosContacto: datosContacto,
+    frase: fraseOraculo
   });
   
   setPantalla('ticket');
@@ -110,8 +112,8 @@ function AppContent() {
       display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' 
     }}>
       <div style={{
-        width: '88%', maxWidth: '430px', height: '88vh', background: '#1a0a0a', 
-        position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        width: '88%', maxWidth: '480px', height: '88vh', background: '#1a0a0a', 
+        position: 'relative', overflow: 'auto', display: 'flex', flexDirection: 'column',
         borderRadius: '35px', border: '1px solid rgba(255,215,0,0.15)', boxShadow: '0 0 40px rgba(0,0,0,0.9)'
       }}>
 

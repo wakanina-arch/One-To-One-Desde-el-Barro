@@ -37,7 +37,7 @@ export default function BarraSuperior({
       top: 0,
       zIndex: 1000,
       height: "65px", // Altura optimizada para el "notch" del iPhone
-      width: "100%",
+      width: "101%",
       boxSizing: "border-box"
     }}>
       
@@ -53,7 +53,7 @@ export default function BarraSuperior({
       {/* Centro: Logo Identidad (Escalado para iPhone) */}
       <div style={{ textAlign: 'center', flex: 1 }}>
         <h2 style={styles.titulo}>ONE TO ONE</h2>
-        <div style={styles.subtitulo}>DESDE EL BARRO</div>
+        {/* <div style={styles.subtitulo}>DESDE EL BARRO</div> */}
       </div>
 
       {/* Lado Derecho: Acciones Perfil/Carrito */}

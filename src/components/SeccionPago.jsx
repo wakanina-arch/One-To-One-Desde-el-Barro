@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export default function SeccionPago({ total, alConfirmar, alVolver }) {
 
-  const [metodo, setMetodo] = useState('tarjeta');
+  const [metodo, setMetodo] = useState('tarjeta'); // 'tarjeta', 'paypal', 'payphone', 'deuna'
   const [datosContacto, setDatosContacto] = useState({
     nombre: '',
     email: '',
@@ -32,24 +32,20 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
     setDatosTarjeta(prev => ({ ...prev, [name]: value }));
   };
 
-  // ✅ NUEVA VALIDACIÓN (más flexible)
   const validarFormulario = () => {
     const nuevosErrores = {};
     
-    // Validaciones más flexibles
     if (!datosContacto.nombre.trim()) nuevosErrores.nombre = 'Requerido';
     
-    // Email solo valida si tiene contenido
     if (datosContacto.email && !/\S+@\S+\.\S+/.test(datosContacto.email)) {
       nuevosErrores.email = 'Email inválido';
     }
     
-    // Teléfono solo valida si tiene contenido
     if (datosContacto.telefono && datosContacto.telefono.length < 5) {
       nuevosErrores.telefono = 'Teléfono muy corto';
     }
     
-    // Validación de tarjeta SOLO si el método es tarjeta
+    // Validación específica según método
     if (metodo === 'tarjeta') {
       if (datosTarjeta.numero && datosTarjeta.numero.length < 16) {
         nuevosErrores.numero = 'Incompleto';
@@ -61,21 +57,104 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
         nuevosErrores.cvv = 'CVV';
       }
     }
+    // PayPal, PayPhone, Deuna podrían tener otras validaciones en el futuro
 
     setErrores(nuevosErrores);
-    return true; // ✅ SIEMPRE retorna true para permitir el pago
+    return true;
   };
 
-  // ✅ NUEVO HANDLE PAGAR (con validación no bloqueante)
   const handlePagar = () => {
     console.log('💰 Botón PAGAR clickeado');
-    validarFormulario(); // Solo muestra errores, no bloquea
+    validarFormulario();
     
     if (alConfirmar) {
       console.log('📦 Enviando método:', metodo);
       alConfirmar(metodo);
     } else {
       console.error('❌ alConfirmar es undefined');
+    }
+  };
+
+  // 🎴 Renderizado condicional del formulario según el método
+  const renderFormularioPago = () => {
+    switch(metodo) {
+      case 'tarjeta':
+        return (
+          <div style={styles.tarjetaForm}>
+            {/* Campo de número con detección automática de tipo de tarjeta */}
+            <div style={styles.inputConIcono}>
+              <input 
+                name="numero"
+                value={datosTarjeta.numero} 
+                onChange={handleCardChange} 
+                style={styles.campoNumero} 
+                placeholder="0000 0000 0000 0000"
+                inputMode="numeric"
+              />
+              {/* El icono cambia según los primeros dígitos (detección automática) */}
+              <span style={styles.iconoDetector}>
+                {datosTarjeta.numero.startsWith('4') ? '💳 VISA' :
+                 datosTarjeta.numero.startsWith('5') ? '💳 MC' :
+                 datosTarjeta.numero.startsWith('3') ? '💳 DINERS' : '💳'}
+              </span>
+            </div>
+            {errores.numero && <span style={styles.error}>{errores.numero}</span>}
+            
+            <div style={styles.gridCard}>
+              <div>
+                <input 
+                  name="expira" 
+                  value={datosTarjeta.expira} 
+                  onChange={handleCardChange} 
+                  style={styles.input} 
+                  placeholder="MM/AA" 
+                />
+                {errores.expira && <span style={styles.error}>{errores.expira}</span>}
+              </div>
+              <div>
+                <input 
+                  name="cvv" 
+                  value={datosTarjeta.cvv} 
+                  onChange={handleCardChange} 
+                  style={styles.input} 
+                  placeholder="CVV" 
+                  inputMode="numeric"
+                />
+                {errores.cvv && <span style={styles.error}>{errores.cvv}</span>}
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 'paypal':
+        return (
+          <div style={styles.mensajeMetodo}>
+            <span style={styles.iconoGrande}>🅿️</span>
+            <p>Serás redirigido a PayPal para completar el pago de forma segura.</p>
+            <p style={styles.nota}>* No necesitas ingresar datos de tarjeta aquí</p>
+          </div>
+        );
+      
+      case 'payphone':
+        return (
+          <div style={styles.mensajeMetodo}>
+            <span style={styles.iconoGrande}>📱</span>
+            <p>Paga con PayPhone usando tu saldo o tarjeta vinculada.</p>
+            <p style={styles.nota}>* Abrirá la aplicación PayPhone para confirmar</p>
+          </div>
+        );
+      
+      case 'deuna':
+        return (
+          <div style={styles.mensajeMetodo}>
+            <span style={styles.iconoGrande}>💎</span>
+            <p>Paga con DEUNA de forma rápida y segura.</p>
+            <p style={styles.nota}>* Requiere cuenta DEUNA activa</p>
+          </div>
+        );
+      
+      default:
+        return null;
     }
   };
 
@@ -90,88 +169,240 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
       height: '100%',
       overflowY: 'auto'
     },
-    titulo: { textAlign: 'center', color: '#8B0000', fontSize: '1.5rem', marginBottom: '10px' },
-    seccion: { marginBottom: '12px', padding: '10px', background: '#fcfcfc', borderRadius: '15px', border: '1px solid #eee' },
-    label: { display: 'block', marginBottom: '3px', color: '#444', fontWeight: 'bold', fontSize: '0.75rem' },
-    input: { width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '0.85rem', boxSizing: 'border-box' },
-    gridCard: { display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '8px', marginTop: '10px' },
-    btnPago: {
-      width: '100%', padding: '12px', background: '#8B0000', color: 'white', border: 'none', 
-      borderRadius: '12px', fontSize: '1.1rem', fontWeight: 'bold', cursor: 'pointer', marginTop: '10px'
+    titulo: { 
+      textAlign: 'center', 
+      color: '#8B0000', 
+      fontSize: '1.5rem', 
+      marginBottom: '15px',
+      fontWeight: '300',
+      letterSpacing: '2px'
     },
-    metodosTab: { display: 'flex', gap: '5px', marginBottom: '10px' },
-    tab: (active) => ({
-      flex: 1, padding: '8px 2px', fontSize: '0.7rem', borderRadius: '8px', border: active ? '2px solid #8B0000' : '1px solid #ddd',
-      background: active ? '#fff5f5' : '#f9f9f9', cursor: 'pointer', fontWeight: active ? 'bold' : 'normal'
+    seccion: { 
+      marginBottom: '15px', 
+      padding: '15px', 
+      background: '#fcfcfc', 
+      borderRadius: '20px', 
+      border: '1px solid #eee' 
+    },
+    label: { 
+      display: 'block', 
+      marginBottom: '5px', 
+      color: '#444', 
+      fontWeight: 'bold', 
+      fontSize: '0.75rem' 
+    },
+    input: { 
+      width: '100%', 
+      padding: '12px', 
+      border: '1px solid #ddd', 
+      borderRadius: '12px', 
+      fontSize: '0.9rem', 
+      boxSizing: 'border-box',
+      transition: 'border 0.2s ease'
+    },
+    // 🎴 Grid de métodos (4 opciones: Tarjeta, PayPal, PayPhone, DEUNA)
+    metodosGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(4, 1fr)',
+      gap: '8px',
+      marginBottom: '20px'
+    },
+    metodoBoton: (active) => ({
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '12px 4px',
+      background: active ? '#fff5f5' : '#f9f9f9',
+      border: active ? '2px solid #8B0000' : '1px solid #ddd',
+      borderRadius: '16px',
+      cursor: 'pointer',
+      transition: 'all 0.2s ease',
+      gap: '6px'
     }),
-    error: { color: 'red', fontSize: '0.65rem', marginTop: '2px' }
+    metodoIcono: {
+      fontSize: '1.5rem'
+    },
+    metodoTexto: {
+      fontSize: '0.7rem',
+      fontWeight: '600',
+      color: '#333'
+    },
+    // 💳 Formulario de tarjeta (con detector inteligente)
+    tarjetaForm: {
+      animation: 'fadeIn 0.3s ease'
+    },
+    inputConIcono: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      marginBottom: '10px',
+      position: 'relative'
+    },
+    campoNumero: {
+      flex: 1,
+      padding: '12px',
+      border: '1px solid #ddd',
+      borderRadius: '12px',
+      fontSize: '0.9rem',
+      paddingRight: '70px' // Espacio para el icono detector
+    },
+    iconoDetector: {
+      position: 'absolute',
+      right: '12px',
+      fontSize: '0.8rem',
+      color: '#8B0000',
+      fontWeight: '600',
+      background: 'white',
+      padding: '2px 6px',
+      borderRadius: '12px',
+      border: '1px solid #eee'
+    },
+    gridCard: { 
+      display: 'grid', 
+      gridTemplateColumns: '1fr 1fr', 
+      gap: '10px', 
+      marginTop: '10px' 
+    },
+    // 📱 Mensajes para otros métodos
+    mensajeMetodo: {
+      textAlign: 'center',
+      padding: '20px 10px',
+      background: '#f5f5f5',
+      borderRadius: '16px',
+      border: '1px dashed #8B0000',
+      animation: 'fadeIn 0.3s ease'
+    },
+    iconoGrande: {
+      fontSize: '3rem',
+      display: 'block',
+      marginBottom: '10px'
+    },
+    nota: {
+      fontSize: '0.7rem',
+      color: '#888',
+      marginTop: '8px',
+      fontStyle: 'italic'
+    },
+    btnPago: {
+      width: '100%', 
+      padding: '14px', 
+      background: '#8B0000', 
+      color: 'white', 
+      border: 'none', 
+      borderRadius: '20px', 
+      fontSize: '1.1rem', 
+      fontWeight: 'bold', 
+      cursor: 'pointer', 
+      marginTop: '15px',
+      transition: 'background 0.2s ease',
+      letterSpacing: '1px'
+    },
+    error: { 
+      color: 'red', 
+      fontSize: '0.65rem', 
+      marginTop: '4px',
+      marginLeft: '4px'
+    }
   };
+
+  // Lista de métodos de pago (simplificada)
+  const metodosPago = [
+    { id: 'tarjeta', nombre: 'TARJETA', icono: '💳' },
+    { id: 'paypal', nombre: 'PayPal', icono: '🅿️' },
+    { id: 'payphone', nombre: 'PayPhone', icono: '📱' },
+    { id: 'deuna', nombre: 'DEUNA', icono: '💎' }
+  ];
 
   return (
     <div style={styles.contenedor}>
-      <h2 style={styles.titulo}>Confirmar Pago</h2>
+      <h2 style={styles.titulo}>CONFIRMAR PAGO</h2>
 
       {/* 1. DATOS PERSONALES */}
       <div style={styles.seccion}>
-        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px'}}>
+        <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px'}}>
           <div>
             <label style={styles.label}>Nombre</label>
-            <input name="nombre" value={datosContacto.nombre} onChange={handleInputChange} style={styles.input} placeholder="Tu nombre" />
+            <input 
+              name="nombre" 
+              value={datosContacto.nombre} 
+              onChange={handleInputChange} 
+              style={styles.input} 
+              placeholder="Tu nombre" 
+            />
             {errores.nombre && <span style={styles.error}>{errores.nombre}</span>}
           </div>
           <div>
             <label style={styles.label}>Teléfono</label>
-            <input name="telefono" value={datosContacto.telefono} onChange={handleInputChange} style={styles.input} placeholder="Opcional" />
+            <input 
+              name="telefono" 
+              value={datosContacto.telefono} 
+              onChange={handleInputChange} 
+              style={styles.input} 
+              placeholder="Opcional" 
+            />
             {errores.telefono && <span style={styles.error}>{errores.telefono}</span>}
           </div>
         </div>
-        <label style={{...styles.label, marginTop: '8px'}}>Email</label>
-        <input name="email" value={datosContacto.email} onChange={handleInputChange} style={styles.input} placeholder="Opcional" />
+        <label style={{...styles.label, marginTop: '10px'}}>Email</label>
+        <input 
+          name="email" 
+          value={datosContacto.email} 
+          onChange={handleInputChange} 
+          style={styles.input} 
+          placeholder="Opcional" 
+        />
         {errores.email && <span style={styles.error}>{errores.email}</span>}
       </div>
 
-      {/* 2. MÉTODOS Y DATOS DE TARJETA */}
+      {/* 2. MÉTODOS DE PAGO */}
       <div style={styles.seccion}>
-        <div style={styles.metodosTab}>
-          {['tarjeta', 'efectivo', 'deuna'].map(m => (
-            <button key={m} onClick={() => setMetodo(m)} style={styles.tab(metodo === m)}>
-              {m.toUpperCase()}
+        <div style={styles.metodosGrid}>
+          {metodosPago.map(m => (
+            <button
+              key={m.id}
+              onClick={() => setMetodo(m.id)}
+              style={styles.metodoBoton(metodo === m.id)}
+            >
+              <span style={styles.metodoIcono}>{m.icono}</span>
+              <span style={styles.metodoTexto}>{m.nombre}</span>
             </button>
           ))}
         </div>
 
-        {metodo === 'tarjeta' && (
-          <div style={{animation: 'fadeIn 0.3s'}}>
-            <label style={styles.label}>Número de Tarjeta</label>
-            <input name="numero" type="number" value={datosTarjeta.numero} onChange={handleCardChange} style={styles.input} placeholder="0000 0000 0000 0000" />
-            {errores.numero && <span style={styles.error}>{errores.numero}</span>}
-            
-            <div style={styles.gridCard}>
-              <div>
-                <label style={styles.label}>Expira</label>
-                <input name="expira" value={datosTarjeta.expira} onChange={handleCardChange} style={styles.input} placeholder="MM/AA" />
-                {errores.expira && <span style={styles.error}>{errores.expira}</span>}
-              </div>
-              <div>
-                <label style={styles.label}>CVV</label>
-                <input name="cvv" type="number" value={datosTarjeta.cvv} onChange={handleCardChange} style={styles.input} placeholder="123" />
-                {errores.cvv && <span style={styles.error}>{errores.cvv}</span>}
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {metodo === 'efectivo' && <p style={{fontSize: '0.8rem', textAlign: 'center', color: '#666'}}>Pagará al recibir su pedido.</p>}
+        {/* FORMULARIO DINÁMICO SEGÚN MÉTODO */}
+        {renderFormularioPago()}
       </div>
 
       {/* 3. TOTAL Y ACCIÓN */}
       <div style={{textAlign: 'center', padding: '10px 0'}}>
         <span style={{fontSize: '0.9rem', color: '#666'}}>Total a pagar:</span>
-        <div style={{fontSize: '1.8rem', fontWeight: 'bold', color: '#8B0000'}}>${total.toFixed(2)}</div>
+        <div style={{fontSize: '2rem', fontWeight: 'bold', color: '#8B0000'}}>
+          ${total.toFixed(2)}
+        </div>
       </div>
 
-      <button onClick={handlePagar} style={styles.btnPago}>PAGAR AHORA</button>
-      <button onClick={alVolver} style={{width: '100%', background: 'none', border: 'none', color: '#888', marginTop: '10px', fontSize: '0.8rem'}}>← Volver al carrito</button>
+      <button onClick={handlePagar} style={styles.btnPago}>
+        {metodo === 'tarjeta' ? 'PAGAR CON TARJETA' :
+         metodo === 'paypal' ? 'PAGAR CON PAYPAL' :
+         metodo === 'payphone' ? 'PAGAR CON PAYPHONE' :
+         'PAGAR CON DEUNA'}
+      </button>
+      
+      <button 
+        onClick={alVolver} 
+        style={{
+          width: '100%', 
+          background: 'none', 
+          border: 'none', 
+          color: '#888', 
+          marginTop: '10px', 
+          fontSize: '0.8rem',
+          cursor: 'pointer',
+          padding: '8px'
+        }}
+      >
+        ← Volver al carrito
+      </button>
     </div>
   );
 }

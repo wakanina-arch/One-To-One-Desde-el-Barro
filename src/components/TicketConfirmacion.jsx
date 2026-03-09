@@ -1,17 +1,23 @@
 import React from 'react';
-import CodigoQR from './CodigoQR'; // Asegúrate de que el archivo se llame así
+import CodigoQR from './CodigoQR';
 
 export default function TicketConfirmacion({ 
-  datos = {}, // Recibimos el objeto 'datosFinales' desde App.jsx
-  pedido = [], // Los items que vienen del carrito
+  datos = {}, 
+  pedido = [], 
   onCerrar 
 }) {
-
-  console.log('🎫 TicketConfirmacion - datos:', datos); // AÑADE ESTE LOG
-  console.log('🎫 TicketConfirmacion - pedido:', pedido); // AÑADE ESTE LOG
   
-  // Extraemos la info de los datos finales o valores por defecto
-  const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta" } = datos;
+  const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta", frase = "" } = datos;
+
+  // Selección de elemento según la frase (opcional - magia espiritual)
+  const getElemento = () => {
+    const fraseLower = frase.toLowerCase();
+    if (fraseLower.includes('fuego') || fraseLower.includes('llama') || fraseLower.includes('brasas')) return '🔥';
+    if (fraseLower.includes('agua') || fraseLower.includes('mar') || fraseLower.includes('río')) return '💧';
+    if (fraseLower.includes('tierra') || fraseLower.includes('barro') || fraseLower.includes('monte')) return '⛰️';
+    if (fraseLower.includes('viento') || fraseLower.includes('aire') || fraseLower.includes('humo')) return '🌬️';
+    return '☯'; // Elemento espíritu por defecto
+  };
 
   return (
     <div style={styles.container}>
@@ -20,6 +26,14 @@ export default function TicketConfirmacion({
           <h2 style={styles.brand}>ONE TO ONE</h2>
           <p style={styles.tagline}>— DESDE EL BARRO —</p>
         </div>
+        
+        {/* 🌟 FRASE ESPIRITUAL - El regalo */}
+        {frase && (
+          <div style={styles.fraseEspiritual}>
+            <div style={styles.elementoIcono}>{getElemento()}</div>
+            <p style={styles.fraseTexto}>"{frase}"</p>
+          </div>
+        )}
         
         <div style={styles.ordenBox}>
           <span style={styles.label}>NÚMERO DE ORDEN</span>
@@ -31,7 +45,7 @@ export default function TicketConfirmacion({
           <CodigoQR valor={ordenId} tamaño={140} />
         </div>
 
-        {/* RESUMEN DETALLADO (Lo que pediste mover aquí) */}
+        {/* RESUMEN DEL PEDIDO */}
         <div style={styles.resumenContainer}>
           <p style={styles.resumenTitulo}>DETALLE DEL BANQUETE</p>
           <div style={styles.listaItems}>
@@ -71,14 +85,14 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#1a0a0a', // Mantenemos el fondo oscuro de la app
+    background: '#1a0a0a',
     padding: '10px'
   },
   ticketCard: { 
     padding: '20px', 
     width: '90%',
     maxWidth: '340px', 
-    background: '#fff', // Color papel para que resalte el QR
+    background: '#fff',
     borderRadius: '25px', 
     boxShadow: '0 15px 35px rgba(0,0,0,0.5)', 
     textAlign: 'center',
@@ -89,6 +103,30 @@ const styles = {
   header: { marginBottom: '15px' },
   brand: { color: '#8B0000', margin: 0, fontSize: '1.6rem', letterSpacing: '2px' },
   tagline: { fontSize: '0.6rem', color: '#999', margin: 0 },
+  
+  // 🌟 NUEVO ESTILO PARA LA FRASE ESPIRITUAL
+  fraseEspiritual: {
+    background: 'linear-gradient(135deg, #fdf2e9, #fff5f5)',
+    padding: '15px 10px',
+    borderRadius: '20px',
+    marginBottom: '15px',
+    border: '1px solid #FFD700',
+    position: 'relative',
+    boxShadow: '0 4px 10px rgba(255,215,0,0.2)'
+  },
+  elementoIcono: {
+    fontSize: '2rem',
+    marginBottom: '5px'
+  },
+  fraseTexto: {
+    color: '#8B0000',
+    fontSize: '0.85rem',
+    fontStyle: 'italic',
+    margin: 0,
+    lineHeight: '1.4',
+    fontWeight: '500'
+  },
+  
   ordenBox: { 
     margin: '10px 0', 
     padding: '10px', 

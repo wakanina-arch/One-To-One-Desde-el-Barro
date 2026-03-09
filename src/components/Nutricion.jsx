@@ -47,7 +47,10 @@ const styles = {
     width: '100%',
     padding: '0', 
     background: 'transparent', 
-    fontFamily: "'Cormorant Garamond', serif"
+    fontFamily: "'Cormorant Garamond', serif",
+    height: '30px',           // ← ALTURA FIJA
+    minHeight: '50px',
+    maxHeight: '30px'
   },
   item: {
     textAlign: 'center',
@@ -58,7 +61,7 @@ const styles = {
     gap: '2px'
   },
   icono: {
-    fontSize: '1rem',
+    fontSize: '0.9rem',
     filter: 'grayscale(0.2)'
   },
   datos: {
@@ -67,7 +70,7 @@ const styles = {
   },
   valor: {
     fontWeight: '800',
-    color: '#01400e', 
+    color: '#0e8f28', 
     fontSize: '0.9rem',
     lineHeight: '1'
   },
