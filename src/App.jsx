@@ -138,7 +138,7 @@ function AppContent() {
               addToCart(item);
             }}
             carritoCount={cartItems.length}
-            frase={fraseOraculo}
+            //frase={fraseOraculo}
           />
         )}
 
