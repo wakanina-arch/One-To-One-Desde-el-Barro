@@ -4,9 +4,14 @@ import WelcomeInicio from "./WelcomeInicio";
 import CategoriaScreen2 from "./components/CategoriaScreen2";
 import ResumenPedido from "./ResumenPedido"; 
 import SeccionPago from "./components/SeccionPago";
-import TicketConfirmacion from "./components/TicketConfirmacion"; 
+import TicketConfirmacion from "./components/TicketConfirmacion";
+import BarraSuperior from "./layout/BarraSuperior";
+import PerfilDesplegable from "./layout/PerfilDesplegable";
+import MenuDesplegable from "./layout/MenuDesplegable";
+import RegisterModal from "./components/RegisterModal";
+import './index.css';
 
-// 1. BASE DE DATOS COMPLETA (Rutas corregidas para iPhone /img/...)
+// BASE DE DATOS COMPLETA (la misma que tienes)
 const database = {
   primero: { 
     titulo: 'COMPLEMENTOS', icono: '🍟',
@@ -45,7 +50,10 @@ const database = {
       { id: 301, nombre: 'Agua Mineral', precio: 1.50, imagen: '/img/postres/AguaMineral.jpg', kcal: 0, prot: 0, carb: 0 },
       { id: 302, nombre: 'Cerveza Club', precio: 3.50, imagen: '/img/postres/CervezaClub.jpg', kcal: 150, prot: 1, carb: 12 },
       { id: 305, nombre: 'Coca Cola', precio: 2.50, imagen: '/img/postres/CocaCola.jpg', kcal: 140, prot: 0, carb: 35 },
-      { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 }, { id: 310, nombre: 'Café Espresso', precio: 1.80, imagen: '/img/postres/CafeEspresso.jpg', kcal: 5, prot: 0, carb: 1 }, { id: 311, nombre: 'Té Verde', precio: 2.00, imagen: '/img/postres/TeVerde.jpg', kcal: 0, prot: 0, carb: 0 }, { id: 312, nombre: 'Limonada Casera', precio: 2.50, imagen: '/img/postres/LimonadaCasera.jpg', kcal: 120, prot: 0, carb: 30 }
+      { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 },
+      { id: 310, nombre: 'Café Espresso', precio: 1.80, imagen: '/img/postres/CafeEspresso.jpg', kcal: 5, prot: 0, carb: 1 },
+      { id: 311, nombre: 'Té Verde', precio: 2.00, imagen: '/img/postres/TeVerde.jpg', kcal: 0, prot: 0, carb: 0 },
+      { id: 312, nombre: 'Limonada Casera', precio: 2.50, imagen: '/img/postres/LimonadaCasera.jpg', kcal: 120, prot: 0, carb: 30 }
     ]
   },
   otras: { 
@@ -53,7 +61,10 @@ const database = {
     platos: [
       { id: 401, nombre: 'Pizza Carbonara', precio: 13.50, imagen: '/img/otras/Carbonara.jpg', kcal: 900, prot: 35, carb: 80 },
       { id: 405, nombre: 'Pizza Margherita', precio: 11.00, imagen: '/img/otras/Margherita.jpg', kcal: 700, prot: 22, carb: 80 },
-      { id: 408, nombre: 'Pizza Pepperoni', precio: 13.50, imagen: '/img/otras/Pepperoni.jpg', kcal: 950, prot: 32, carb: 85 }, { id: 410, nombre: 'Pizza Vegetariana', precio: 12.00, imagen: '/img/otras/Vegetariana.jpg', kcal: 750, prot: 28, carb: 80 }, { id: 411, nombre: 'Pizza Hawaiana', precio: 13.00, imagen: '/img/otras/Hawaiana.jpg', kcal: 850, prot: 30, carb: 80 }, { id: 412, nombre: 'Pizza Cuatro Quesos', precio: 14.00, imagen: '/img/otras/CuatroQuesos.jpg', kcal: 1000, prot: 40, carb: 90 }
+      { id: 408, nombre: 'Pizza Pepperoni', precio: 13.50, imagen: '/img/otras/Pepperoni.jpg', kcal: 950, prot: 32, carb: 85 },
+      { id: 410, nombre: 'Pizza Vegetariana', precio: 12.00, imagen: '/img/otras/Vegetariana.jpg', kcal: 750, prot: 28, carb: 80 },
+      { id: 411, nombre: 'Pizza Hawaiana', precio: 13.00, imagen: '/img/otras/Hawaiana.jpg', kcal: 850, prot: 30, carb: 80 },
+      { id: 412, nombre: 'Pizza Cuatro Quesos', precio: 14.00, imagen: '/img/otras/CuatroQuesos.jpg', kcal: 1000, prot: 40, carb: 90 }
     ] 
   }
 };
@@ -62,8 +73,8 @@ function AppContent() {
   // Extraemos TODAS las funciones del carrito
   const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart, calculateTotal } = useCart();
   
-  console.log('🏠 AppContent - cartItems:', cartItems); // LOG
-  console.log('🏠 AppContent - total:', calculateTotal()); // LOG
+  console.log('🏠 AppContent - cartItems:', cartItems);
+  console.log('🏠 AppContent - total:', calculateTotal());
   
   const [pantalla, setPantalla] = useState('welcome');
   const [categoriaActual, setCategoriaActual] = useState(null);
@@ -71,40 +82,95 @@ function AppContent() {
   const [datosFinales, setDatosFinales] = useState({ total: 0, metodo: '', ordenId: '' });
   const [tipoEntrega, setTipoEntrega] = useState('local');
 
-  const [usuario] = useState(() => {
+  // Estados para menús desplegables
+  const [perfilAbierto, setPerfilAbierto] = useState(false);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+  
+  // Estados para el modal de registro/edición
+  const [modalRegisterAbierto, setModalRegisterAbierto] = useState(false);
+  const [modoRegistro, setModoRegistro] = useState('registro');
+
+  const [usuario, setUsuario] = useState(() => {
     const savedUser = localStorage.getItem('oneToOneUser');
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
   const totalNeto = calculateTotal();
 
+  // Funciones para menús (UNA SOLA VEZ CADA UNA)
+  const togglePerfil = () => {
+    console.log('👤 togglePerfil - actual:', perfilAbierto);
+    setPerfilAbierto(!perfilAbierto);
+  };
+  
+  const cerrarPerfil = () => {
+    console.log('👤 cerrarPerfil');
+    setPerfilAbierto(false);
+  };
+  
+  const toggleMenu = () => {
+    console.log('📋 toggleMenu - actual:', menuAbierto);
+    setMenuAbierto(!menuAbierto);
+  };
+  
+  const cerrarMenu = () => {
+    console.log('📋 cerrarMenu');
+    setMenuAbierto(false);
+  };
+
+  // Funciones para modal de registro/edición
+  const abrirRegistro = () => {
+    console.log('📝 Abriendo registro');
+    setModoRegistro('registro');
+    setModalRegisterAbierto(true);
+  };
+
+  const abrirEditarPerfil = () => {
+    console.log('🔧 Abriendo edición de perfil');
+    setModoRegistro('editar');
+    setModalRegisterAbierto(true);
+    setPerfilAbierto(false);
+  };
+
+  const cerrarModal = () => {
+    console.log('❌ Cerrando modal');
+    setModalRegisterAbierto(false);
+  };
+
+  const manejarRegistro = (usuarioActualizado) => {
+    console.log('📝 Usuario actualizado:', usuarioActualizado);
+    localStorage.setItem('oneToOneUser', JSON.stringify(usuarioActualizado));
+    setUsuario(usuarioActualizado);
+    setModalRegisterAbierto(false);
+  };
+
   const irACategoria = (id, fraseRecibida) => {
     console.log('➡️ App - frase recibida:', fraseRecibida);
     if (fraseRecibida) setFraseOraculo(fraseRecibida); 
     setCategoriaActual(id); 
     setPantalla('categoria');
+    cerrarMenu();
   };
 
- const finalizarCompra = (datosPago) => {
-   console.log('💳 finalizarCompra - datos:', datosPago);
+  const finalizarCompra = (datosPago) => {
+    console.log('💳 finalizarCompra - datos:', datosPago);
     console.log('💳 App - frase antes de ticket:', fraseOraculo);
-  
-  
-  const metodoPago = typeof datosPago === 'string' ? datosPago : datosPago.metodo;
-  const datosContacto = typeof datosPago === 'object' ? datosPago.datosContacto : {};
-  
-  const idGenerado = `QR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-  
-  setDatosFinales({ 
-    total: totalNeto, 
-    metodo: metodoPago, 
-    ordenId: idGenerado,
-    datosContacto: datosContacto,
-    frase: fraseOraculo
-  });
-  
-  setPantalla('ticket');
-};
+    
+    const metodoPago = typeof datosPago === 'string' ? datosPago : datosPago.metodo;
+    const datosContacto = typeof datosPago === 'object' ? datosPago.datosContacto : {};
+    
+    const idGenerado = `QR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    
+    setDatosFinales({ 
+      total: totalNeto, 
+      metodo: metodoPago, 
+      ordenId: idGenerado,
+      datosContacto: datosContacto,
+      frase: fraseOraculo
+    });
+    
+    setPantalla('ticket');
+  };
 
   return (
     <div className="App" style={{ 
@@ -113,89 +179,138 @@ function AppContent() {
     }}>
       <div style={{
         width: '88%', maxWidth: '480px', height: '88vh', background: '#1a0a0a', 
-        position: 'relative', overflow: 'auto', display: 'flex', flexDirection: 'column',
+        position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column',
         borderRadius: '35px', border: '1px solid rgba(255,215,0,0.15)', boxShadow: '0 0 40px rgba(0,0,0,0.9)'
       }}>
-
-        {pantalla === 'welcome' && (
-          <WelcomeInicio usuario={usuario} onSelectCategory={irACategoria} />
+        
+        {/* BARRA SUPERIOR - SOLO EN PANTALLAS QUE NO SEAN WELCOME */}
+        {pantalla !== 'welcome' && (
+          <div style={{ position: 'relative', zIndex: 10 }}>
+            <BarraSuperior 
+              usuario={usuario} 
+              onMenuClick={toggleMenu}
+              onCarritoClick={() => setPantalla('resumen')}
+              onPerfilClick={togglePerfil}
+              carritoCount={cartItems.length} 
+            />
+          </div>
         )}
 
-        {pantalla === 'categoria' && categoriaActual && (
-          <CategoriaScreen2
-            usuario={usuario}
-            categoria={database[categoriaActual]}
-            onBack={() => {
-              console.log('⬅️ onBack'); // LOG
-              setPantalla('welcome');
-            }}
-            onVerCarrito={() => {
-              console.log('🛒 onVerCarrito - items:', cartItems.length); // LOG
-              setPantalla('resumen');
-            }}
-            onAddToCart={(item) => {
-              console.log('➕ onAddToCart desde CategoriaScreen2:', item); // LOG
-              addToCart(item);
-            }}
-            carritoCount={cartItems.length}
-            //frase={fraseOraculo}
-          />
-        )}
+        {/* MENÚ DESPLEGABLE */}
+        <MenuDesplegable 
+          abierto={menuAbierto}
+          onClose={cerrarMenu}
+          onSelectCategoria={(id) => irACategoria(id, fraseOraculo)}
+        />
 
-        {pantalla === 'resumen' && (
-          <ResumenPedido 
-            carrito={cartItems}
-            subtotal={calculateTotal().toFixed(2)}
-            iva={(calculateTotal() * 0.15).toFixed(2)}
-            envio={tipoEntrega === 'domicilio' ? '2.00' : '0.00'}
-            total={(calculateTotal() * 1.15 + (tipoEntrega === 'domicilio' ? 2 : 0)).toFixed(2)}
-            tipoEntrega={tipoEntrega}
-            setTipoEntrega={setTipoEntrega}
-            alConfirmar={() => {
-              console.log('✅ alConfirmar desde Resumen - yendo a pago'); // LOG
-              setPantalla('pago');
-            }}
-            alVolver={() => {
-              console.log('⬅️ alVolver desde Resumen'); // LOG
-              setPantalla('categoria');
-            }}
-            modificarCantidad={(id, delta) => {
-              console.log('🔄 modificarCantidad:', id, delta); // LOG
-              updateQuantity(id, delta);
-            }}
-            eliminarDelCarrito={(id) => {
-              console.log('🗑️ eliminarDelCarrito:', id); // LOG
-              removeFromCart(id);
-            }}
-          />
-        )}
+        {/* PERFIL DESPLEGABLE */}
+        <PerfilDesplegable 
+          abierto={perfilAbierto}
+          onClose={cerrarPerfil}
+          usuario={usuario}
+          onEditar={abrirEditarPerfil}
+          onLogout={() => {
+            cerrarPerfil();
+            localStorage.removeItem('oneToOneUser');
+            setUsuario(null);
+          }}
+        />
 
-        {pantalla === 'pago' && (
-          <SeccionPago
-            total={totalNeto}
-            carrito={cartItems}
-            alVolver={() => {
-              console.log('⬅️ alVolver desde Pago'); // LOG
-              setPantalla('resumen');
-            }}
-            alConfirmar={(metodo) => {
-              console.log('💳 alConfirmar desde Pago:', metodo); // LOG
-              finalizarCompra(metodo);
-            }}
-          />
-        )}
+        {/* CONTENIDO PRINCIPAL */}
+        <div style={{ flex: 1, overflow: 'auto', position: 'relative', zIndex: 1 }}>
+          
+          {pantalla === 'welcome' && (
+            <WelcomeInicio 
+              usuario={usuario} 
+              onSelectCategory={irACategoria}
+              onAbrirRegistro={abrirRegistro}
+            />
+          )}
 
-        {pantalla === 'ticket' && (
-          <TicketConfirmacion 
-            datos={datosFinales}
-            pedido={cartItems}
-            onCerrar={() => { 
-              console.log('🏁 onCerrar - limpiando todo'); // LOG
-              clearCart(); 
-              setPantalla('welcome'); 
-            }}
-          />
-        )}
+          {pantalla === 'categoria' && categoriaActual && (
+            <CategoriaScreen2
+              usuario={usuario}
+              categoria={database[categoriaActual]}
+              onBack={() => {
+                console.log('⬅️ onBack');
+                setPantalla('welcome');
+              }}
+              onVerCarrito={() => {
+                console.log('🛒 onVerCarrito - items:', cartItems.length);
+                setPantalla('resumen');
+              }}
+              onAddToCart={(item) => {
+                console.log('➕ onAddToCart desde CategoriaScreen2:', item);
+                addToCart(item);
+              }}
+              carritoCount={cartItems.length}
+            />
+          )}
+
+          {pantalla === 'resumen' && (
+            <ResumenPedido 
+              carrito={cartItems}
+              subtotal={calculateTotal().toFixed(2)}
+              iva={(calculateTotal() * 0.15).toFixed(2)}
+              envio={tipoEntrega === 'domicilio' ? '2.00' : '0.00'}
+              total={(calculateTotal() * 1.15 + (tipoEntrega === 'domicilio' ? 2 : 0)).toFixed(2)}
+              tipoEntrega={tipoEntrega}
+              setTipoEntrega={setTipoEntrega}
+              alConfirmar={() => {
+                console.log('✅ alConfirmar desde Resumen - yendo a pago');
+                setPantalla('pago');
+              }}
+              alVolver={() => {
+                console.log('⬅️ alVolver desde Resumen');
+                setPantalla('categoria');
+              }}
+              modificarCantidad={(id, delta) => {
+                console.log('🔄 modificarCantidad:', id, delta);
+                updateQuantity(id, delta);
+              }}
+              eliminarDelCarrito={(id) => {
+                console.log('🗑️ eliminarDelCarrito:', id);
+                removeFromCart(id);
+              }}
+            />
+          )}
+
+          {pantalla === 'pago' && (
+            <SeccionPago
+              total={totalNeto}
+              carrito={cartItems}
+              alVolver={() => {
+                console.log('⬅️ alVolver desde Pago');
+                setPantalla('resumen');
+              }}
+              alConfirmar={(metodo) => {
+                console.log('💳 alConfirmar desde Pago:', metodo);
+                finalizarCompra(metodo);
+              }}
+            />
+          )}
+
+          {pantalla === 'ticket' && (
+            <TicketConfirmacion 
+              datos={datosFinales}
+              pedido={cartItems}
+              onCerrar={() => { 
+                console.log('🏁 onCerrar - limpiando todo');
+                clearCart(); 
+                setPantalla('welcome'); 
+              }}
+            />
+          )}
+        </div>
+
+        {/* MODAL ÚNICO DE REGISTRO/EDICIÓN */}
+        <RegisterModal 
+          open={modalRegisterAbierto}
+          onClose={cerrarModal}
+          onRegister={manejarRegistro}
+          modo={modoRegistro}
+          usuarioActual={usuario}
+        />
       </div>
     </div>
   );

@@ -4,84 +4,160 @@ export default function MenuDesplegable({ abierto, onClose, onSelectCategoria })
   if (!abierto) return null;
 
   const categorias = [
-    { id: 'primero', label: 'PRIMEROS', icono: '🍖' },
-    { id: 'segundo', label: 'SEGUNDOS', icono: '🥘' },
-    { id: 'postres', label: 'POSTRES', icono: '🍯' },
-    { id: 'otras', label: 'OTRAS', icono: '🔥' }
+    { id: 'primero', label: 'PRIMEROS', icono: '🍖', elemento: 'fuego' },
+    { id: 'segundo', label: 'SEGUNDOS', icono: '🥘', elemento: 'tierra' },
+    { id: 'postres', label: 'BEBIDAS', icono: '🍵', elemento: 'agua' },
+    { id: 'otras', label: 'OTRAS', icono: '🔥', elemento: 'metal' }
   ];
 
+  const getColorElemento = (elemento) => {
+    switch(elemento) {
+      case 'fuego': return '#FF4500';
+      case 'tierra': return '#CD7F32';
+      case 'agua': return '#4169E1';
+      case 'metal': return '#FFD700';
+      default: return '#FFD700';
+    }
+  };
+
   return (
-    <div style={styles.menu}>
-      <h3 style={styles.titulo}>MENÚ PALACIO</h3>
-      {categorias.map(cat => (
-        <button
-          key={cat.id}
-          onClick={() => { 
-            onSelectCategoria(cat.id); 
-            onClose(); 
-          }}
-          style={styles.boton}
-          /* --- PINTURA APLICADA AQUÍ DENTRO --- */
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(255, 215, 0, 0.15)";
-            e.currentTarget.style.paddingLeft = "1.5rem";
-            e.currentTarget.style.color = "#FFD700";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-            e.currentTarget.style.paddingLeft = "0.8rem";
-            e.currentTarget.style.color = "white";
-          }}
-        >
-          <span style={{ fontSize: "1.3rem" }}>{cat.icono}</span>
-          <span style={{ fontWeight: 600 }}>{cat.label}</span>
-        </button>
-      ))}
+    <div style={styles.overlay} onClick={onClose}>
+      <div style={styles.menu} onClick={e => e.stopPropagation()}>
+        <div style={styles.header}>
+          <h3 style={styles.titulo}>PALACIO INTERIOR</h3>
+          <div style={styles.lineaDecorativa} />
+        </div>
+        
+        {categorias.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => { 
+              onSelectCategoria(cat.id); 
+              onClose(); 
+            }}
+            style={styles.boton}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = `rgba(${cat.elemento === 'fuego' ? '255,69,0' : cat.elemento === 'agua' ? '65,105,225' : '255,215,0'}, 0.15)`;
+              e.currentTarget.style.paddingLeft = "1.8rem";
+              e.currentTarget.style.borderLeft = `3px solid ${getColorElemento(cat.elemento)}`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.paddingLeft = "1.2rem";
+              e.currentTarget.style.borderLeft = "3px solid transparent";
+            }}
+          >
+            <span style={{ 
+              fontSize: "1.5rem",
+              filter: `drop-shadow(0 0 5px ${getColorElemento(cat.elemento)})`
+            }}>
+              {cat.icono}
+            </span>
+            <span style={styles.label}>{cat.label}</span>
+            <span style={styles.elementoTag}>{cat.elemento}</span>
+          </button>
+        ))}
+        
+        <div style={styles.footer}>
+          <p style={styles.frase}>"El camino se hace al andar"</p>
+          <div style={styles.cincoElementos}>
+            <span>🔥</span><span>💧</span><span>🌬️</span><span>⛰️</span><span>✨</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 const styles = {
+  overlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 98,
+    background: "rgba(0,0,0,0.2)"
+  },
   menu: {
     position: "fixed",
-    top: "60px",
-    left: 0,
-    width: "260px",
-    background: "rgba(20, 20, 20, 0.98)", // Un poco más oscuro para el Palacio
-    backdropFilter: "blur(12px)",
-    borderRadius: "0 0 25px 0",
-    padding: "1.5rem 1rem",
-    borderRight: "3px solid #FFD700",
-    borderBottom: "3px solid #FFD700",
-    boxShadow: "10px 0 30px rgba(0,0,0,0.5)",
+    top: "80px",
+    left: "15px",
+    width: "280px",
+    background: "rgba(18, 12, 12, 0.97)",
+    backdropFilter: "blur(20px)",
+    borderRadius: "0 25px 25px 25px",
+    padding: "1.5rem 0.8rem",
+    border: "2px solid rgba(255,215,0,0.3)",
+    borderTop: "4px solid #FFD700",
+    boxShadow: "15px 15px 30px rgba(0,0,0,0.6)",
     zIndex: 999,
-    transition: "all 0.3s ease"
+    animation: "deslizarMenu 0.3s ease"
+  },
+  header: {
+    marginBottom: "1.5rem",
+    textAlign: "center"
   },
   titulo: {
     color: "#FFD700",
-    fontSize: "0.9rem",
-    letterSpacing: "2px",
-    marginBottom: "1.5rem",
+    fontSize: "1rem",
+    letterSpacing: "3px",
+    marginBottom: "0.5rem",
     fontFamily: "'Cormorant Garamond', serif",
-    borderBottom: "1px solid rgba(255,215,0,0.3)",
-    paddingBottom: "0.5rem",
-    textAlign: "center"
+    fontWeight: "600"
+  },
+  lineaDecorativa: {
+    height: "2px",
+    width: "80px",
+    margin: "0 auto",
+    background: "linear-gradient(90deg, transparent, #FFD700, transparent)"
   },
   boton: {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
     width: "100%",
-    padding: "0.8rem",
-    marginBottom: "0.5rem",
+    padding: "0.9rem 1.2rem",
+    marginBottom: "0.3rem",
     background: "transparent",
     border: "none",
-    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    borderLeft: "3px solid transparent",
     color: "white",
     fontSize: "1rem",
     cursor: "pointer",
-    transition: "all 0.3s ease", // Suaviza el movimiento
-    fontFamily: "'Cormorant Garamond', serif"
+    transition: "all 0.3s ease",
+    fontFamily: "'Cormorant Garamond', serif",
+    position: "relative"
+  },
+  label: {
+    flex: 1,
+    textAlign: "left",
+    fontWeight: "500",
+    letterSpacing: "1px"
+  },
+  elementoTags: {
+    fontSize: "0.55rem",
+    color: "rgba(255,215,0,0.6)",
+    fontStyle: "italic",
+    marginRight: "0.5rem"
+  },
+  footer: {
+    marginTop: "2rem",
+    textAlign: "center",
+    borderTop: "1px solid rgba(255,215,0,0.2)",
+    paddingTop: "1rem"
+  },
+  frase: {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: "0.7rem",
+    fontStyle: "italic",
+    marginBottom: "0.5rem"
+  },
+  cincoElementos: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "0.8rem",
+    fontSize: "1rem",
+    opacity: 0.6
   }
 };
-

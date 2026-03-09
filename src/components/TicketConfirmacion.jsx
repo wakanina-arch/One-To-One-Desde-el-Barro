@@ -7,17 +7,11 @@ export default function TicketConfirmacion({
   onCerrar 
 }) {
   
-  const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta", frase = "" } = datos;
-
-  // Selección de elemento según la frase (opcional - magia espiritual)
-  const getElemento = () => {
-    const fraseLower = frase.toLowerCase();
-    if (fraseLower.includes('fuego') || fraseLower.includes('llama') || fraseLower.includes('brasas')) return '🔥';
-    if (fraseLower.includes('agua') || fraseLower.includes('mar') || fraseLower.includes('río')) return '💧';
-    if (fraseLower.includes('tierra') || fraseLower.includes('barro') || fraseLower.includes('monte')) return '⛰️';
-    if (fraseLower.includes('viento') || fraseLower.includes('aire') || fraseLower.includes('humo')) return '🌬️';
-    return '☯'; // Elemento espíritu por defecto
-  };
+  const { total = 0, ordenId = "OTO-PENDIENTE", metodo = "tarjeta", frase = "", datosContacto = {} } = datos;
+  
+  // Recuperar la frase guardada con su icono
+  const fraseGuardada = JSON.parse(localStorage.getItem('fraseOraculo') || '{}');
+  const { texto = frase, elemento = "espiritu", icono = "✨" } = fraseGuardada;
 
   return (
     <div style={styles.container}>
@@ -27,11 +21,12 @@ export default function TicketConfirmacion({
           <p style={styles.tagline}>— DESDE EL BARRO —</p>
         </div>
         
-        {/* 🌟 FRASE ESPIRITUAL - El regalo */}
-        {frase && (
+        {/* 🌟 FRASE ESPIRITUAL CON SU ICONO */}
+        {texto && (
           <div style={styles.fraseEspiritual}>
-            <div style={styles.elementoIcono}>{getElemento()}</div>
-            <p style={styles.fraseTexto}>"{frase}"</p>
+            <div style={styles.elementoIcono}>{icono}</div>
+            <p style={styles.fraseTexto}>"{texto}"</p>
+            <div style={styles.elementoNombre}>{elemento.toUpperCase()}</div>
           </div>
         )}
         
@@ -104,27 +99,33 @@ const styles = {
   brand: { color: '#8B0000', margin: 0, fontSize: '1.6rem', letterSpacing: '2px' },
   tagline: { fontSize: '0.6rem', color: '#999', margin: 0 },
   
-  // 🌟 NUEVO ESTILO PARA LA FRASE ESPIRITUAL
+  // 🌟 FRASE ESPIRITUAL CON ICONO
   fraseEspiritual: {
     background: 'linear-gradient(135deg, #fdf2e9, #fff5f5)',
     padding: '15px 10px',
     borderRadius: '20px',
     marginBottom: '15px',
     border: '1px solid #FFD700',
-    position: 'relative',
     boxShadow: '0 4px 10px rgba(255,215,0,0.2)'
   },
   elementoIcono: {
-    fontSize: '2rem',
+    fontSize: '2.5rem',
     marginBottom: '5px'
   },
   fraseTexto: {
     color: '#8B0000',
     fontSize: '0.85rem',
     fontStyle: 'italic',
-    margin: 0,
+    margin: '5px 0',
     lineHeight: '1.4',
     fontWeight: '500'
+  },
+  elementoNombre: {
+    fontSize: '0.6rem',
+    color: '#B8860B',
+    textTransform: 'uppercase',
+    letterSpacing: '2px',
+    marginTop: '5px'
   },
   
   ordenBox: { 

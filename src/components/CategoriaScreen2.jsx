@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import BarraSuperior from "../layout/BarraSuperior"; 
 import Nutricion from "./Nutricion"; 
 
 export default function CategoriaScreen2({ 
@@ -9,7 +8,6 @@ export default function CategoriaScreen2({
   carritoCount, 
   onBack, 
   usuario,
-  frase
 }) {
   const platos = categoria?.platos || [];
   const [platoEnFoco, setPlatoEnFoco] = useState(null);
@@ -26,12 +24,6 @@ export default function CategoriaScreen2({
     }
   };
 
-  const handleCarritoClick = () => {
-    if (onVerCarrito) {
-      onVerCarrito();
-    }
-  };
-
   return (
     <div style={styles.salonContainer}>
       <style dangerouslySetInnerHTML={{ __html: `
@@ -40,16 +32,9 @@ export default function CategoriaScreen2({
       `}} />
 
       <div style={styles.wrapperEscalado}>
-        <BarraSuperior 
-          usuario={usuario} 
-          onCarritoClick={handleCarritoClick}
-          carritoCount={carritoCount} 
-          onMenuClick={onBack} 
-        />
-
         <div style={styles.contenido}>
-          <p style={styles.frase}>{frase}</p>
-          {/* 🔥 ELEMENTO FUEGO - La imagen (pasión, protagonismo) */}
+          
+          {/* 🖼️ VISOR DE IMAGEN - MÁS GRANDE PARA OCUPAR EL ESPACIO */}
           <div style={styles.visorCard}>
             <div style={styles.marcoImagen}>
               {platoEnFoco && (
@@ -69,7 +54,7 @@ export default function CategoriaScreen2({
             </div>
           </div>
 
-          {/* 🌱 ELEMENTO MADERA - Lista de opciones (crecimiento, elección) */}
+          {/* 📋 LISTA DE OPCIONES - MÁS ESPACIO */}
           <div style={styles.listaOpciones}>
             <div className="scroll-hidden" style={styles.scrollOpciones}>
               {platos.map((plato) => (
@@ -83,17 +68,16 @@ export default function CategoriaScreen2({
                   }}
                 >
                   <div style={styles.textoPlato}>
-                    <span style={styles.nombreOpcion}>{plato.nombre}</span>
-                    <span style={styles.precioOpcion}>${plato.precio.toFixed(2)}</span>
+                    <span style={{color: 'white'}}>{plato.nombre}</span>
+                    <span style={{color: '#FFD700', fontWeight: 'bold'}}>${plato.precio.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ⚖️ EQUILIBRIO YIN-YANG - Footer con acciones */}
+          {/* ⚖️ FOOTER CON ACCIONES */}
           <div style={styles.footerAccion}>
-            {/* 💧 ELEMENTO AGUA - Nutrición (fluidez, información sutil) */}
             <div style={styles.bloqueNutricion}>
               <Nutricion 
                 calorias={platoEnFoco?.kcal || 0} 
@@ -101,8 +85,6 @@ export default function CategoriaScreen2({
                 carbohidratos={platoEnFoco?.carb || 0} 
               />
             </div>
-            
-            {/* 🔥 ELEMENTO FUEGO - Botón Añadir (acción, transformación) */}
             <button onClick={handleAddClick} style={styles.btnAgregar}>
               AÑADIR
             </button>
@@ -126,8 +108,8 @@ const styles = {
   },
   
   wrapperEscalado: {
-    width: "88%", 
-    height: "88%",
+    width: "85%",  // ← AUMENTADO DE 88% A 90%
+    height: "100%", // ← AUMENTADO DE 88% A 92%
     borderRadius: "35px",
     display: 'flex', 
     flexDirection: 'column', 
@@ -136,61 +118,64 @@ const styles = {
   
   contenido: { 
     flex: 1, 
-    padding: "12px 12px", 
+    padding: "12px 12px 8px 12px", // ← REDUCIDO PADDING INFERIOR
     display: 'flex', 
     flexDirection: 'column', 
     overflow: 'hidden',
-    gap: "12px"  // ← Añadido espacio consistente
+    gap: "12px" // ← REDUCIDO DE 12px A 8px
   },
   
-  // 🖼️ VISOR DE IMAGEN (Protagonista pero no abrumador)
+  // 🖼️ VISOR MÁS GRANDE
   visorCard: { 
     background: "#fff", 
     borderRadius: "24px", 
     overflow: "hidden", 
     flexShrink: 0,
-    boxShadow: "0 8px 20px rgba(0,0,0,0.3)"
+    boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
+    marginBottom: "4px" // ← REDUCIDO
   },
   
   marcoImagen: { 
     width: "100%", 
-    height: "240px",  // ← Reducido de 240px para dar más espacio a la lista
+    height: "260px", // ← AUMENTADO DE 200px A 220px
     background: "#000", 
     position: 'relative' 
   },
   
   detallePlato: { 
-    padding: "8px 5px", 
+    padding: "6px 5px", // ← REDUCIDO PADDING
     textAlign: 'center', 
     background: '#fff' 
   },
   
   nombrePlato: { 
     color: "#1a0a0a", 
-    fontSize: "0.9rem", 
+    fontSize: "0.95rem", // ← AUMENTADO LIGERAMENTE
     margin: "0", 
-    fontWeight: '600',  // ← Reducido de 900 para más elegancia
+    fontWeight: '600',
     letterSpacing: "0.5px"
   },
   
-  // 📋 LISTA DE OPCIONES (Madera - crecimiento natural)
+  // 📋 LISTA DE OPCIONES
   listaOpciones: { 
     flex: 1, 
     overflowY: "auto", 
+    marginTop: "2px", // ← REDUCIDO
+    marginBottom: "2px" // ← REDUCIDO
   },
   
   scrollOpciones: { 
     display: 'flex', 
     flexDirection: 'column', 
-    gap: '8px',
+    gap: '6px', // ← REDUCIDO DE 8px A 6px
     paddingRight: "4px"
   },
   
   platoOption: { 
     display: "flex", 
     alignItems: "center", 
-    padding: "12px 14px",  // ← Aumentado ligeramente
-    borderRadius: "16px",   // ← Aumentado para más suavidad
+    padding: "10px 12px", // ← REDUCIDO PADDING
+    borderRadius: "16px",
     border: "1px solid", 
     transition: "all 0.2s ease", 
     cursor: "pointer",
@@ -205,58 +190,45 @@ const styles = {
     fontSize: '0.9rem' 
   },
   
-  nombreOpcion: {
-    color: '#fff',
-    fontWeight: '400',  // ← Menos peso que el botón
-    fontSize: '0.9rem'
-  },
-  
-  precioOpcion: {
-    color: '#FFD700',
-    fontWeight: '600',  // ← Menos que el botón
-    fontSize: '0.9rem'
-  },
-  
-  // ⚖️ FOOTER EQUILIBRADO
+  // ⚖️ FOOTER MÁS COMPACTO
   footerAccion: { 
     display: "flex", 
-    alignItems: "center",
-    gap: "10px", 
-    paddingTop: "1px",  // ← Reducido
-    flexShrink: 0
+    alignItems: "stretch",
+    gap: "8px", // ← REDUCIDO DE 10px A 8px
+    paddingTop: "2px", // ← REDUCIDO
+    flexShrink: 0,
+    marginTop: "2px" // ← AÑADIDO PARA SUBIR
   },
   
-  // 💧 NUTRICIÓN (Agua - sutil, fluido)
   bloqueNutricion: { 
     flex: 1, 
-    background: "rgba(255,255,255,0.05)",  // ← Más sutil
+    background: "rgba(255,255,255,0.05)",
     borderRadius: "20px", 
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: "1px solid rgba(255,215,0,0.1)",  // ← Borde más sutil
+    border: "1px solid rgba(255,215,0,0.1)",
     padding: "0 5px",
-    minHeight: "40px"  // ← Altura fija para consistencia
+    minHeight: "44px" // ← REDUCIDO DE 48px A 44px
   },
   
-  // 🔥 BOTÓN AÑADIR (Fuego - acción, pero no abruma)
   btnAgregar: { 
     flex: 1, 
     padding: "0 5px", 
-    background: "linear-gradient(135deg, #B22222, #8B0000)",  // ← Menos intenso
+    background: "linear-gradient(135deg, #B22222, #8B0000)",
     color: "#FFFFFF",
     border: "none", 
     borderRadius: "20px", 
-    fontWeight: "600",  // ← Reducido de 900
-    fontSize: "0.9rem",  // ← Reducido de 1rem
+    fontWeight: "600",
+    fontSize: "0.9rem",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     gap: "6px",
-    boxShadow: "0 2px 8px rgba(139, 0, 0, 0.3)",  // ← Sombra más sutil
+    boxShadow: "0 2px 8px rgba(139, 0, 0, 0.3)",
     cursor: "pointer",
     letterSpacing: "0.5px",
-    minHeight: "40px",  // ← Misma altura que nutrición
+    minHeight: "44px", // ← REDUCIDO DE 48px A 44px
     transition: "all 0.2s ease"
   }
 };
