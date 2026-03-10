@@ -140,7 +140,7 @@ const styles = {
   },
   formularioScroll: { 
     overflowY: 'auto', paddingRight: '8px', paddingLeft: '2px', 
-    WebkitOverflowScrolling: 'touch' 
+    WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain'
   },
   headerComercial: { 
     display: 'flex', alignItems: 'center', gap: '12px', background: '#1a0a0a', 
