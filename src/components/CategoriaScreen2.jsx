@@ -98,8 +98,8 @@ export default function CategoriaScreen2({
 
 const styles = {
   salonContainer: { 
-    height: "100%", 
-    width: "100%", 
+    height: "110%", 
+    width: "103%", 
     background: "radial-gradient(circle at center, #3d0a0a 0%, #1a0a0a 100%)", 
     display: 'flex', 
     alignItems: 'center', 
@@ -108,7 +108,7 @@ const styles = {
   },
   
   wrapperEscalado: {
-    width: "85%",  // ← AUMENTADO DE 88% A 90%
+    width: "90%",  // ← AUMENTADO DE 88% A 90%
     height: "100%", // ← AUMENTADO DE 88% A 92%
     borderRadius: "35px",
     display: 'flex', 

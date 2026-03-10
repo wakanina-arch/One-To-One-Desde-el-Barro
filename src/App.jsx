@@ -51,9 +51,7 @@ const database = {
       { id: 302, nombre: 'Cerveza Club', precio: 3.50, imagen: '/img/postres/CervezaClub.jpg', kcal: 150, prot: 1, carb: 12 },
       { id: 305, nombre: 'Coca Cola', precio: 2.50, imagen: '/img/postres/CocaCola.jpg', kcal: 140, prot: 0, carb: 35 },
       { id: 309, nombre: 'Zumo de Frutas', precio: 3.00, imagen: '/img/postres/ZumoDeFrutas.jpg', kcal: 110, prot: 1, carb: 25 },
-      { id: 310, nombre: 'Café Espresso', precio: 1.80, imagen: '/img/postres/CafeEspresso.jpg', kcal: 5, prot: 0, carb: 1 },
-      { id: 311, nombre: 'Té Verde', precio: 2.00, imagen: '/img/postres/TeVerde.jpg', kcal: 0, prot: 0, carb: 0 },
-      { id: 312, nombre: 'Limonada Casera', precio: 2.50, imagen: '/img/postres/LimonadaCasera.jpg', kcal: 120, prot: 0, carb: 30 }
+      { id: 306, nombre: 'Fanta Naranja', precio: 2.50, imagen: '/img/postres/FantaNaranja.jpg', kcal: 160, prot: 0, carb: 40 }
     ]
   },
   otras: { 
@@ -197,11 +195,18 @@ function AppContent() {
         )}
 
         {/* MENÚ DESPLEGABLE */}
-        <MenuDesplegable 
-          abierto={menuAbierto}
-          onClose={cerrarMenu}
-          onSelectCategoria={(id) => irACategoria(id, fraseOraculo)}
-        />
+<MenuDesplegable 
+  abierto={menuAbierto}
+  onClose={cerrarMenu}
+  onSelectCategoria={(id) => {
+    if (id === 'welcome') {
+      setPantalla('welcome'); // 🌀 Vuelve al Origen
+    } else {
+      irACategoria(id, fraseOraculo); // 🍖 Va a la comida
+    }
+  }}
+/>
+
 
         {/* PERFIL DESPLEGABLE */}
         <PerfilDesplegable 
