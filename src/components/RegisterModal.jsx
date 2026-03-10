@@ -135,7 +135,7 @@ const styles = {
   },
   modal: { 
     background: '#fff', borderRadius: '30px', padding: '1.5rem 1rem', 
-    width: '100%', maxWidth: '440px', border: '1.5px solid #FFD700', 
+    width: '100%', maxWidth: '400px', border: '1.5px solid #FFD700', 
     maxHeight: '94vh', display: 'flex', flexDirection: 'column' 
   },
   formularioScroll: { 

@@ -39,8 +39,8 @@ const ResumenPedido = ({
 
   return (
     <div className="resumen-contenedor" style={{ 
-      padding: '20px', 
-      maxWidth: '500px', 
+      padding: '30px', 
+      maxWidth: '430px', 
       margin: 'auto', 
       background: 'white', 
       borderRadius: '20px', 

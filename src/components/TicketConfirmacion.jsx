@@ -11,7 +11,9 @@ export default function TicketConfirmacion({
   
   // Recuperar la frase guardada con su icono
   const fraseGuardada = JSON.parse(localStorage.getItem('fraseOraculo') || '{}');
-  const { texto = frase, elemento = "espiritu", icono = "✨" } = fraseGuardada;
+  const { texto = frase, 
+    //elemento = "espiritu",
+    icono = "✨" } = fraseGuardada;
 
   return (
     <div style={styles.container}>
@@ -26,7 +28,7 @@ export default function TicketConfirmacion({
           <div style={styles.fraseEspiritual}>
             <div style={styles.elementoIcono}>{icono}</div>
             <p style={styles.fraseTexto}>"{texto}"</p>
-            <div style={styles.elementoNombre}>{elemento.toUpperCase()}</div>
+            {/* <div style={styles.elementoNombre}>{elemento.toUpperCase()}</div> */}
           </div>
         )}
         
@@ -79,20 +81,20 @@ const styles = {
     height: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'auto',
     background: '#1a0a0a',
     padding: '10px'
   },
   ticketCard: { 
     padding: '20px', 
-    width: '90%',
-    maxWidth: '340px', 
+    width: '100%',
+    maxWidth: '430px', 
     background: '#fff',
     borderRadius: '25px', 
     boxShadow: '0 15px 35px rgba(0,0,0,0.5)', 
     textAlign: 'center',
     fontFamily: "serif",
-    maxHeight: '90vh',
+    maxHeight: '80vh',
     overflowY: 'auto'
   },
   header: { marginBottom: '15px' },
@@ -102,7 +104,7 @@ const styles = {
   // 🌟 FRASE ESPIRITUAL CON ICONO
   fraseEspiritual: {
     background: 'linear-gradient(135deg, #fdf2e9, #fff5f5)',
-    padding: '15px 10px',
+    padding: '2px 10px',
     borderRadius: '20px',
     marginBottom: '15px',
     border: '1px solid #FFD700',
@@ -114,19 +116,22 @@ const styles = {
   },
   fraseTexto: {
     color: '#8B0000',
-    fontSize: '0.85rem',
+    fontSize: '0.9rem',
     fontStyle: 'italic',
     margin: '5px 0',
     lineHeight: '1.4',
-    fontWeight: '500'
+    fontWeight: '600'
   },
+ /* 
   elementoNombre: {
     fontSize: '0.6rem',
     color: '#B8860B',
     textTransform: 'uppercase',
     letterSpacing: '2px',
     marginTop: '5px'
-  },
+  }
+*/
+
   
   ordenBox: { 
     margin: '10px 0', 

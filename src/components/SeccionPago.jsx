@@ -1,87 +1,46 @@
 import React, { useState } from 'react';
+import { FaCcVisa, FaCcMastercard, FaCcDinersClub } from 'react-icons/fa';
+
+// Función para obtener el logo de la tarjeta usando react-icons
+const obtenerLogoTarjeta = (numero) => {
+  if (numero.startsWith('4')) {
+    return <FaCcVisa size={24} color="#1434CB" />; // Azul de Visa
+  }
+  if (numero.startsWith('5')) {
+    return <FaCcMastercard size={24} color="#FF5F00" />; // Naranja de Mastercard
+  }
+  if (numero.startsWith('3')) {
+    return <FaCcDinersClub size={24} color="#1C1C1C" />; // Negro/gris de Diners
+  }
+  return <span style={{ fontSize: '1.5rem' }}>?</span>;
+};
 
 export default function SeccionPago({ total, alConfirmar, alVolver }) {
-
-  const [metodo, setMetodo] = useState('tarjeta'); // 'tarjeta', 'paypal', 'payphone', 'deuna'
-  const [datosContacto, setDatosContacto] = useState({
-    nombre: '',
-    email: '',
-    telefono: ''
-  });
-  
-  const [datosTarjeta, setDatosTarjeta] = useState({
-    numero: '',
-    expira: '',
-    cvv: ''
-  });
-
+  const [metodo, setMetodo] = useState('tarjeta');
+  const [datosTarjeta, setDatosTarjeta] = useState({ numero: '', expira: '', cvv: '' });
+  const [datosContacto, setDatosContacto] = useState({ nombre: '', telefono: '', email: '' });
   const [errores, setErrores] = useState({});
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setDatosContacto(prev => ({ ...prev, [name]: value }));
-    if (errores[name]) setErrores(prev => ({ ...prev, [name]: '' }));
-  };
 
   const handleCardChange = (e) => {
     const { name, value } = e.target;
     if (name === 'numero' && value.length > 16) return;
-    if (name === 'expira' && value.length > 5) return;
-    if (name === 'cvv' && value.length > 3) return;
-    
     setDatosTarjeta(prev => ({ ...prev, [name]: value }));
   };
 
-  const validarFormulario = () => {
-    const nuevosErrores = {};
-    
-    if (!datosContacto.nombre.trim()) nuevosErrores.nombre = 'Requerido';
-    
-    if (datosContacto.email && !/\S+@\S+\.\S+/.test(datosContacto.email)) {
-      nuevosErrores.email = 'Email inválido';
-    }
-    
-    if (datosContacto.telefono && datosContacto.telefono.length < 5) {
-      nuevosErrores.telefono = 'Teléfono muy corto';
-    }
-    
-    // Validación específica según método
-    if (metodo === 'tarjeta') {
-      if (datosTarjeta.numero && datosTarjeta.numero.length < 16) {
-        nuevosErrores.numero = 'Incompleto';
-      }
-      if (datosTarjeta.expira && !datosTarjeta.expira.includes('/')) {
-        nuevosErrores.expira = 'MM/AA';
-      }
-      if (datosTarjeta.cvv && datosTarjeta.cvv.length < 3) {
-        nuevosErrores.cvv = 'CVV';
-      }
-    }
-    // PayPal, PayPhone, Deuna podrían tener otras validaciones en el futuro
-
-    setErrores(nuevosErrores);
-    return true;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDatosContacto(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePagar = () => {
-    console.log('💰 Botón PAGAR clickeado');
-    validarFormulario();
-    
-    if (alConfirmar) {
-      console.log('📦 Enviando método:', metodo);
-      alConfirmar(metodo);
-    } else {
-      console.error('❌ alConfirmar es undefined');
-    }
+    alConfirmar(metodo);
   };
 
-  // 🎴 Renderizado condicional del formulario según el método
   const renderFormularioPago = () => {
     switch(metodo) {
       case 'tarjeta':
         return (
           <div style={styles.tarjetaForm}>
-            {/* Campo de número con detección automática de tipo de tarjeta */}
             <div style={styles.inputConIcono}>
               <input 
                 name="numero"
@@ -91,37 +50,27 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
                 placeholder="0000 0000 0000 0000"
                 inputMode="numeric"
               />
-              {/* El icono cambia según los primeros dígitos (detección automática) */}
               <span style={styles.iconoDetector}>
-                {datosTarjeta.numero.startsWith('4') ? '💳 VISA' :
-                 datosTarjeta.numero.startsWith('5') ? '💳 MC' :
-                 datosTarjeta.numero.startsWith('3') ? '💳 DINERS' : '💳'}
+                {obtenerLogoTarjeta(datosTarjeta.numero)}
               </span>
             </div>
-            {errores.numero && <span style={styles.error}>{errores.numero}</span>}
-            
             <div style={styles.gridCard}>
-              <div>
-                <input 
-                  name="expira" 
-                  value={datosTarjeta.expira} 
-                  onChange={handleCardChange} 
-                  style={styles.input} 
-                  placeholder="MM/AA" 
-                />
-                {errores.expira && <span style={styles.error}>{errores.expira}</span>}
-              </div>
-              <div>
-                <input 
-                  name="cvv" 
-                  value={datosTarjeta.cvv} 
-                  onChange={handleCardChange} 
-                  style={styles.input} 
-                  placeholder="CVV" 
-                  inputMode="numeric"
-                />
-                {errores.cvv && <span style={styles.error}>{errores.cvv}</span>}
-              </div>
+              <input 
+                name="expira"
+                value={datosTarjeta.expira} 
+                onChange={handleCardChange} 
+                style={styles.input} 
+                placeholder="MM/AA"
+              />
+              <input 
+                name="cvv"
+                value={datosTarjeta.cvv} 
+                onChange={handleCardChange} 
+                style={styles.input} 
+                placeholder="CVV"
+                type="password"
+                maxLength="4"
+              />
             </div>
           </div>
         );
@@ -158,10 +107,11 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
     }
   };
 
+  // Estilos
   const styles = {
     contenedor: {
       padding: '15px',
-      maxWidth: '400px',
+      maxWidth: '430px',
       margin: '0 auto',
       background: '#fff',
       borderRadius: '25px',
@@ -200,7 +150,6 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
       boxSizing: 'border-box',
       transition: 'border 0.2s ease'
     },
-    // 🎴 Grid de métodos (4 opciones: Tarjeta, PayPal, PayPhone, DEUNA)
     metodosGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(4, 1fr)',
@@ -227,30 +176,36 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
       fontWeight: '600',
       color: '#333'
     },
-    // 💳 Formulario de tarjeta (con detector inteligente)
-    tarjetaForm: {
+    tarjetaForm: { 
+      display: 'flex', 
+      flexDirection: 'column', 
+      gap: '10px',
       animation: 'fadeIn 0.3s ease'
     },
-    inputConIcono: {
-      display: 'flex',
+    inputConIcono: { 
+      position: 'relative', 
+      display: 'flex', 
       alignItems: 'center',
-      gap: '8px',
-      marginBottom: '10px',
-      position: 'relative'
+      marginBottom: '10px'
     },
-    campoNumero: {
-      flex: 1,
-      padding: '12px',
-      border: '1px solid #ddd',
-      borderRadius: '12px',
-      fontSize: '0.9rem',
-      paddingRight: '70px' // Espacio para el icono detector
+    campoNumero: { 
+      width: '100%', 
+      padding: '12px', 
+      borderRadius: '12px', 
+      border: '1px solid #ddd', 
+      paddingRight: '60px', 
+      boxSizing: 'border-box',
+      fontSize: '0.9rem'
     },
     iconoDetector: {
       position: 'absolute',
-      right: '12px',
+      right: '15px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      display: 'flex',
+      alignItems: 'center',
       fontSize: '0.8rem',
-      color: '#8B0000',
+      //color: '#000000',
       fontWeight: '600',
       background: 'white',
       padding: '2px 6px',
@@ -261,9 +216,8 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
       display: 'grid', 
       gridTemplateColumns: '1fr 1fr', 
       gap: '10px', 
-      marginTop: '10px' 
+      marginTop: '0' 
     },
-    // 📱 Mensajes para otros métodos
     mensajeMetodo: {
       textAlign: 'center',
       padding: '20px 10px',
@@ -285,17 +239,17 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
     },
     btnPago: {
       width: '100%', 
-      padding: '14px', 
+      marginTop: '20px', 
+      padding: '15px',
       background: '#8B0000', 
-      color: 'white', 
-      border: 'none', 
-      borderRadius: '20px', 
-      fontSize: '1.1rem', 
+      color: '#fff', 
+      border: 'none',
+      borderRadius: '15px', 
       fontWeight: 'bold', 
-      cursor: 'pointer', 
-      marginTop: '15px',
-      transition: 'background 0.2s ease',
-      letterSpacing: '1px'
+      cursor: 'pointer',
+      fontSize: '1.1rem',
+      letterSpacing: '1px',
+      transition: 'background 0.2s ease'
     },
     error: { 
       color: 'red', 
@@ -305,7 +259,7 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
     }
   };
 
-  // Lista de métodos de pago (simplificada)
+  // Lista de métodos de pago
   const metodosPago = [
     { id: 'tarjeta', nombre: 'TARJETA', icono: '💳' },
     { id: 'paypal', nombre: 'PayPal', icono: '🅿️' },
@@ -338,7 +292,7 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
               value={datosContacto.telefono} 
               onChange={handleInputChange} 
               style={styles.input} 
-              placeholder="Opcional" 
+              placeholder="099 999 9999" 
             />
             {errores.telefono && <span style={styles.error}>{errores.telefono}</span>}
           </div>
@@ -349,7 +303,7 @@ export default function SeccionPago({ total, alConfirmar, alVolver }) {
           value={datosContacto.email} 
           onChange={handleInputChange} 
           style={styles.input} 
-          placeholder="Opcional" 
+          placeholder="OneToOne@org.ec" 
         />
         {errores.email && <span style={styles.error}>{errores.email}</span>}
       </div>
